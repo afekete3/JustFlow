@@ -21,6 +21,8 @@ const MainHeader = ({
   let currentPlaylist;
   let currentArtist;
 
+  console.log(viewType);
+
   if(viewType === 'playlist') {
     currentPlaylist = playlists.filter(playlist => {
       return playlist.name === headerTitle;
@@ -55,7 +57,13 @@ const MainHeader = ({
         </div>
       )}
 
-      {viewType === 'Artist' && currentArtist && (
+      { headerTitle==='Home' && (
+        <div>
+          <h3>Your Library</h3>
+        </div>
+      )}
+
+      {/* {viewType === 'Artist' && currentArtist && (
         <div>
           <div className='current-artist-header-container'>
             <img className='current-artist-image' src={currentArtist.images[0].url} />
@@ -70,9 +78,9 @@ const MainHeader = ({
             {songPaused ? 'PLAY' : 'PAUSE'}
           </button>
         </div>
-      )}
+      )} */}
 
-      {(
+      {/* {(
         headerTitle === 'Songs'||
 				headerTitle === 'Recently Played' ||
 				headerTitle === 'Albums' ||
@@ -88,8 +96,8 @@ const MainHeader = ({
             )}
 
           </div>
-        )}
-      {(headerTitle === 'Browse') && (
+        )} */}
+      {/* {(headerTitle === 'Browse') && (
         <div>
           <h3 className='header-title'>{headerTitle}</h3>
           <div className='browse-headers'>
@@ -98,7 +106,7 @@ const MainHeader = ({
             <p className={viewType === 'Featured' ? 'active' : ''} onClick={() => { fetchFeatured(token); updateViewType('Featured'); updateHeaderTitle('Browse'); }}>Featured</p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
 
   );

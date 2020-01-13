@@ -4,22 +4,32 @@ import SongList from '../SongList';
 
 
 import './MainView.css';
+import PlaylistHome from '../PlaylistHome';
 
 const MainView = ({ headerTitle, audioControl, resumeSong, pauseSong }) => {
 
   return (
     <div>
       {
-        headerTitle === 'Albums' ?
-          (<AlbumList audioControl={ audioControl } />) :
-          headerTitle === 'Artists' ?
-            (<ArtistList />) :
-            (headerTitle === 'Browse') ?
-              ( <BrowseView />) :
-              //anything else show SongList
+        headerTitle==='' ?
+        (<PlaylistHome  />) :
+        headerTitle === 'Home' ?
+          (<PlaylistHome  />) :
               ( <SongList resumeSong={ resumeSong } pauseSong={ pauseSong } audioControl={ audioControl } />)
       }
     </div>
+    // <div>
+    //   {
+    //     headerTitle === 'Albums' ?
+    //       (<AlbumList audioControl={ audioControl } />) :
+    //       headerTitle === 'Artists' ?
+    //         (<ArtistList />) :
+    //         (headerTitle === 'Browse') ?
+    //           ( <BrowseView />) :
+    //           //anything else show SongList
+    //           ( <SongList resumeSong={ resumeSong } pauseSong={ pauseSong } audioControl={ audioControl } />)
+    //   }
+    // </div>
   );
 
 };

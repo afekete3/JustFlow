@@ -27,6 +27,12 @@ const SideMenu = ({
     fetchFeatured(token);
   };
 
+  const handleHomeClick = () =>{
+    updateHeaderTitle('Home');
+    updateViewType('Home');
+
+  }
+
   const renderSideMenu = () => {
     const menu = [
       {
@@ -55,6 +61,14 @@ const SideMenu = ({
 
   return (
     <ul className='side-menu-container'>
+
+      <li className='side-menu-item'>
+        <h3 className='side-menu-title' onClick={handleHomeClick}>Home</h3>
+      </li>
+
+      <li className='side-menu-item'>
+        <button className='new-playlist-btn'>Create Playlist</button>
+      </li>
       
       {/* <h3 className='user-library-header'>Your Library</h3>
       {

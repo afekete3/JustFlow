@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import './SongList.css';
 
+import {Icon} from 'semantic-ui-react';
+
 class SongList extends Component {
 
   componentWillReceiveProps (nextProps) {
@@ -27,6 +29,7 @@ class SongList extends Component {
             this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
               this.props.audioControl(song); } } className='play-song'>
             <i className={`fa ${buttonClass} play-btn`} aria-hidden="true"/>
+            <Icon circular name='play' inverted color='grey'  link/>
           </div>
 
           {this.props.viewType !== 'songs' && (

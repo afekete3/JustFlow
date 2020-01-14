@@ -17,9 +17,14 @@ import SideMenu from './components/SideMenu';
 
 class App extends Component {
 
+
+	
+
 	static audio;
 
 	componentDidMount() {
+
+		
 
 	  let hashParams = {};
 	  let e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -33,6 +38,38 @@ class App extends Component {
 	  } else {
 	    this.props.setToken(hashParams.access_token);
 	  }
+
+	  window.onSpotifyWebPlaybackSDKReady = () => {
+		// You can now initialize Spotify.Player and use the SDK
+		var player = new Spotify.Player({
+			name: '12-inch Cock',
+			getOAuthToken: callback =>{
+				// window.location.href = 'https://accounts.spotify.com/authorize?client_id=230be2f46909426b8b80cac36446b52a&scope=playlist-read-private%20playlist-read-collaborative%20playlist-modify-public%20user-read-recently-played%20playlist-modify-private%20ugc-image-upload%20user-follow-modify%20user-follow-read%20user-library-read%20user-library-modify%20user-read-private%20user-read-email%20user-top-read%20user-read-playback-state&response_type=token&redirect_uri=http://localhost:3000/callback';
+	    		// this.props.setToken(hashParams.access_token);
+				callback(hashParams.access_token);
+			},
+			volume: 0.5
+		})
+		player.connect().then(success=>{
+			if(success){
+				console.log('The Web Playback SDK successfully connected to Spotify!');
+				player.getCurrentState().then(state => {
+					if (!state) {
+						console.error('User is not playing music through the Web Playback SDK');
+						return;
+					  }
+					  let {
+						current_track,
+						next_tracks: [next_track]
+					  } = state.track_window;
+					
+					  console.log('Currently Playing', current_track);
+					  console.log('Playing Next', next_track);
+				})
+			}
+		});
+
+	};
 
 	}
 
@@ -132,7 +169,8 @@ App.propTypes = {
   playSong: PropTypes.func,
   stopSong: PropTypes.func,
   resumeSong: PropTypes.func,
-  volume: PropTypes.number
+  volume: PropTypes.number,
+  SpotifyPlayer: PropTypes.object
 };
 
 const mapStateToProps = (state) => {

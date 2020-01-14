@@ -57,6 +57,7 @@ white-space: nowrap;
 }
 
 .side-menu-title{
-
+  display: inline;
+  padding-left: 10px;
   font-size: 16px;
 }

@@ -5,6 +5,7 @@ import SongList from '../SongList';
 
 import './MainView.css';
 import PlaylistHome from '../PlaylistHome';
+import GeneratePlaylist from '../GeneratePlaylist';
 
 const MainView = ({ headerTitle, audioControl, resumeSong, pauseSong }) => {
 
@@ -15,6 +16,8 @@ const MainView = ({ headerTitle, audioControl, resumeSong, pauseSong }) => {
         (<PlaylistHome  />) :
         headerTitle === 'Home' ?
           (<PlaylistHome  />) :
+          headerTitle === 'GeneratePlaylist' ?
+          (<GeneratePlaylist/>) :
               ( <SongList resumeSong={ resumeSong } pauseSong={ pauseSong } audioControl={ audioControl } />)
       }
     </div>

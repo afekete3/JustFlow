@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import TrackSearch from '../TrackSearch';
 import './MainHeader.css';
 
 const MainHeader = ({
@@ -38,6 +39,19 @@ const MainHeader = ({
   return (
 
     <div className='section-title'>
+
+      { headerTitle==='Home' && (
+        <div>
+          <h3>Your Library</h3>
+        </div>
+      )}
+
+      { headerTitle === 'GeneratePlaylist' &&(
+        <div>
+          <h3>Select a Song</h3>
+          <TrackSearch />
+        </div>
+      )}
       {viewType === 'playlist' && (
         <div className='playlist-title-container'>
           <div className='playlist-image-container'>
@@ -57,11 +71,7 @@ const MainHeader = ({
         </div>
       )}
 
-      { headerTitle==='Home' && (
-        <div>
-          <h3>Your Library</h3>
-        </div>
-      )}
+      
 
       {/* {viewType === 'Artist' && currentArtist && (
         <div>

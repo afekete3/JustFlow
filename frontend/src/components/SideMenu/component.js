@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './SideMenu.css';
 
+import {Icon} from 'semantic-ui-react';
+
 const SideMenu = ({
   updateHeaderTitle,
   updateViewType,
@@ -16,64 +18,29 @@ const SideMenu = ({
 }) => {
 
 
-  const handleClick = (name)  => {
-    updateHeaderTitle(name);
-    updateViewType(name);
-  };
-
-  const handleBrowseClick = ()  => {
-    updateHeaderTitle('Browse');
-    updateViewType('Featured');
-    fetchFeatured(token);
-  };
-
   const handleHomeClick = () =>{
     updateHeaderTitle('Home');
     updateViewType('Home');
 
   }
 
-  const renderSideMenu = () => {
-    const menu = [
-      {
-        name: 'Recently Played',
-        action: fetchRecentlyPlayed
-      },
-      {
-        name: 'Songs',
-        action: fetchSongs
-      },
-    ];
+  const handleGenerateClick = () =>{
+    updateHeaderTitle('GeneratePlaylist');
+    updateViewType('songs');
 
-    return menu.map(item => {
-      return (
-        <li key={ item.name }
-          className={title === item.name ? 'active side-menu-item': 'side-menu-item'}
-          onClick={() => {
-            item.getArtists ? item.action(token, artistIds) : item.action(token);
-            handleClick(item.name); }
-          }>
-          { item.name }
-        </li>
-      );
-    });
-  };
+  }
 
   return (
     <ul className='side-menu-container'>
 
       <li className='side-menu-item'>
+        <Icon name='home'/>
         <h3 className='side-menu-title' onClick={handleHomeClick}>Home</h3>
       </li>
 
       <li className='side-menu-item'>
-        <button className='new-playlist-btn'>Create Playlist</button>
+        <button onClick={handleGenerateClick} className='new-playlist-btn'>Create Playlist</button>
       </li>
-      
-      {/* <h3 className='user-library-header'>Your Library</h3>
-      {
-        renderSideMenu()
-      } */}
     </ul>
   );
 

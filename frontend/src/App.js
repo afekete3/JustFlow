@@ -15,7 +15,6 @@ class App extends React.Component {
   componentDidMount(){
     let parsed = queryString.parse(window.location.search)
     let accessToken = parsed['access_token']
-
   }
 
 }

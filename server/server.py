@@ -21,7 +21,4 @@ app.register_blueprint(organize, url_prefix='/playlist')
 PORT = 8080
 
 if __name__ == "__main__":
-    # testing the controllers
-    # item = track_info.get('4vUmTMuQqjdnvlZmAH61Qk')
-    # print(item.name)
     app.run(debug=True, port=PORT)

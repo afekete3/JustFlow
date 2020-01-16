@@ -13,7 +13,7 @@ import json
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)
 app = Flask(__name__)
-DB_URL = 'mongodb+srv://JustFlowAdmin:'+passwords['db_password']+'@justflow-l8dim.mongodb.net/track_db?retryWrites=true&w=majority'
+DB_URL = 'mongodb+srv://JustFlowAdmin:'+passwords['db_password']+'@justflow-l8dim.mongodb.net/JustFlow?retryWrites=true&w=majority'
 app.config['MONGODB_HOST'] = DB_URL
 db = MongoEngine(app)
 app.register_blueprint(auth, url_prefix='')

@@ -8,5 +8,6 @@ class Track(Document):
     mfcc = ListField(required=True)
     chroma = ListField(required=True)
     preview = BinaryField(required=True)
-    meta = {'collection' : 'track_info'}
+    tempo = IntField(required=True)
+    meta = {'collection' : 'tracks'}
 

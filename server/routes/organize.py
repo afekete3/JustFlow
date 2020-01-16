@@ -4,6 +4,7 @@ import requests
 from urllib.parse import quote
 import sys
 from controllers import track
+from models import organize_model
 # from documents.track import TrackInfo 
 
 
@@ -16,7 +17,7 @@ def organize_playlist():
         return Response(response="please provide a playlist to organize", status=400)
     elif "ids" not in data: 
         return Response(response="incorrect object passed", status=400)
-    order = {}
-    songs = track.get_multiple_tracks(data['ids'])
+    tracks = track.get_multiple_tracks(data['ids'])
     # call the organize method with the machine learning
-    return Response(order, status=200)
+    organized_tracks = organize_model.organize(tracks)
+    return Response(organized_tracks, status=200)

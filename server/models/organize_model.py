@@ -26,7 +26,6 @@ def organize(tracks):
     clustered_order = []
 
     for key,val in grouped_tracks.items():
-        print('key',key)
         count = 0
         increament = int(len(val) / 3)
         # some fucky logic here for the ordering an im not sure it works
@@ -39,8 +38,7 @@ def organize(tracks):
         current = 0
         val.sort(key=lambda track: track['tempo'])
         while count != len(val):
-            print(current, val[current][2])
-            clustered_order.append(val[current])
+            clustered_order.append(val[current]['_id'])
             current = (current + increament) % len(val)
             count += 1
     

@@ -2,7 +2,6 @@ from mongoengine import *
 
 class Track(Document):
     _id = StringField(required=True)
-    track_id = StringField(required=True)
     preview_url = StringField(required=True)
     name = StringField(required=True)
     mfcc = ListField(required=True)

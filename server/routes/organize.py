@@ -1,5 +1,5 @@
 import json
-from flask import Flask, request, redirect, g, render_template, Blueprint, Response
+from flask import Flask, request, redirect, g, render_template, Blueprint, Response, jsonify, make_response
 import requests
 from urllib.parse import quote
 import sys
@@ -17,7 +17,7 @@ def organize_playlist():
         return Response(response="please provide a playlist to organize", status=400)
     elif "ids" not in data: 
         return Response(response="incorrect object passed", status=400)
-    tracks = track.get_multiple_tracks(data['ids'])
+    tracks = track.get_multiple_tracks(data['ids'], data['access_token'])
     # call the organize method with the machine learning
     organized_tracks = organize_model.organize(tracks)
-    return Response(organized_tracks, status=200)
+    return make_response({'ordered_ids':organized_tracks})

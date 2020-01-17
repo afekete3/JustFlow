@@ -18,13 +18,13 @@ def add_new_track(track_id, access_token):
     # when adding a new track we need the authorization token 
     # need to work on this 
     try:
-        print(track_id + ' being added to the db')
         track_url = 'https://api.spotify.com/v1/tracks/' + track_id
         # im not sure if this is the right way to use the access token
         response = requests.get(track_url, headers={'Authorization': 'Bearer ' + access_token})
         track = json.loads(response.content)
         if 'preview_url' not in track or track['preview_url'] is None:
-            raise LookupError(track_id + ' has no preview url')
+            # might want to do this another way 
+            return 'NoPreviewUrl'
         id = track['id']
         name = track['name']
         preview_url = track['preview_url']
@@ -47,6 +47,7 @@ def add_new_track(track_id, access_token):
 
         delete_file(path)
         return create(new_track)
+
     except Exception as err:
         # probably will change
         print(err)
@@ -59,22 +60,39 @@ def update(track):
 def delete(track):
     Track.delete(track)
 
-def get_track_by_id(track_id):
+def get_by_id(track_id, access_token):
     try: 
         return Track.objects.get(_id=track_id)
     except Exception as err: 
         print(err)
-        print('in get_track_by_id method')
-        return 'DoesNotExist'
+        print('in get_by_id method')
+        return add_new_track(track_id, access_token)
 
+# used to cahce the db, not sure if its working
+def memoize(func):
+    cache = dict()
+
+    def memoized_func(*args):
+        print(cache)
+        if args in cache:
+            print('in cache')
+            return cache[args]
+        result = func(*args)
+        cache[args] = result
+        print(cache)
+        return result
+    
+    return memoized_func
+
+def get_all(genre):
+    all_tracks = Track.objects
+    return all_tracks
 
 def get_multiple_tracks(track_ids, access_token):
     tracks = []
     for id in track_ids:
-        track = get_track_by_id(id)
-        if track == 'DoesNotExist':
-            track = add_new_track(id, access_token)
-        if track == 'InternalServerError':
+        track = get_by_id(id, access_token)
+        if track == 'InternalServerError' or track == "NoPreviewUrl":
             continue
         tracks.append(track)
     return tracks

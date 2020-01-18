@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import SongList from '../SongList';
 import './GeneratePlaylist.css'
 
 
@@ -11,9 +12,9 @@ class GeneratePlaylist extends Component{
             console.log(song);
 
             return(
-                <li>
-                    {song.track.name}
-                </li>
+                <div>
+
+                </div>
             );
             
         });
@@ -21,11 +22,13 @@ class GeneratePlaylist extends Component{
     }
 
     render(){
+        
         return(
             <div>
-                <ul>
+                {/* <ul>
                     {this.renderSongs()}
-                </ul>
+                </ul> */}
+                <SongList checkBoxVisible={true}/>
             </div>
         );
     };

@@ -90,6 +90,7 @@
 .song-title p,
 .song-artist p,
 .song-album p,
+.song-added p,
 .song-length p {
   white-space: nowrap;
   overflow: hidden;
@@ -100,12 +101,13 @@
 
 .song-length,
 .song-length-header {
-	width: 60px;
+  width: 60px;
+  text-align: right;
 }
 
 .song-added,
 .song-added-header {
-	width: 80px;
+	width: 100px;
 }
 
 .song-album,
@@ -164,4 +166,28 @@
 
 .add-song .fa:hover {
   -webkit-text-stroke: 2px rgb(24, 24, 24);
+}
+
+.first-item-margin{
+  margin-left: 40px;
+}
+
+.generate-btn-container{
+  display: inline;
+}
+
+.generate-btn {
+  background: #1db954;
+  font-family: 'Proxima Nova', Georgia, sans-serif;
+  color: #fff;
+  border: none;
+  margin-top: 10px;
+  border-radius: 20px;
+  padding: 10px;
+  width: 120px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 20px;
 }

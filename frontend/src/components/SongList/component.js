@@ -7,11 +7,50 @@ import {Icon} from 'semantic-ui-react';
 
 class SongList extends Component {
 
-  componentWillReceiveProps (nextProps) {
-    if(nextProps.token !== '' && !nextProps.fetchSongsError && nextProps.fetchSongsPending && nextProps.viewType === 'songs') {
-      this.props.fetchSongs(nextProps.token);
+  constructor(props){
+    super(props)
+    this.state= {
+      selectedSong: null
     }
   }
+
+  playSong = (song) =>{
+    (song.track.id === this.props.songId) && this.props.songPlaying && this.props.songPaused ? this.props.resumeSong() :
+            this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
+              this.props.audioControl(song);
+  }
+
+  generatePlaylist = () =>{
+
+  }
+
+
+
+  selectSong(){
+    console.log(this.state.selectedSong)
+
+    return(
+      <div>
+        <div className='playlist-title-container'>
+          <div className='playlist-image-container'>
+            <img className='playlist-image' src={this.state.selectedSong.track.album.images[0] ? this.state.selectedSong.track.album.images[0].url : null} />
+          </div>
+          
+          <div className='playlist-info-container'>
+            <p className='playlist-text'>SELECTED SONG</p>
+            <h3 className='header-title'>{this.state.selectedSong.track.name}</h3>
+            <p className='created-by'>Artist: <span className='lighter-text'>{this.state.selectedSong.track.artists[0].name}</span> </p>
+            <button onClick={this.generatePlaylist} className='generate-btn generate-btn-container'>GENERATE</button>
+            {/* <p className='created-by'>Artist: <span className='lighter-text'>{this.state.selectedSong.track.artists[0].name}</span> - {this.msToMinutesAndSeconds(this.state.selectedSong.track.duration_ms)}</p> */}
+
+          </div>
+        </div>
+      </div>
+      
+    )
+    
+  }
+
 
   msToMinutesAndSeconds(ms) {
     const minutes = Math.floor(ms / 60000);
@@ -24,28 +63,20 @@ class SongList extends Component {
       const buttonClass = song.track.id === this.props.songId && !this.props.songPaused ? "fa-pause-circle-o" : "fa-play-circle-o";
 
       return (
-        <li className={song.track.id === this.props.songId ? 'active user-song-item' : 'user-song-item'} key={ i }>
-          <div onClick={() => {(song.track.id === this.props.songId) && this.props.songPlaying && this.props.songPaused ? this.props.resumeSong() :
-            this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
-              this.props.audioControl(song); } } className='play-song'>
+        <li onClick={()=>{
+          console.log("song", song)
+          this.setState({selectedSong: song})
+        }} className={song.track.id === this.props.songId ? 'active user-song-item' : 'user-song-item'} key={ i }>
+          <div onClick={() => {this.playSong(song) } } className='play-song'>
             <i className={`fa ${buttonClass} play-btn`} aria-hidden="true"/>
             <Icon circular name='play' inverted color='grey'  link/>
           </div>
 
-          {this.props.viewType !== 'songs' && (
-            <p className='add-song' onClick={() => {this.props.addSongToLibrary(this.props.token, song.track.id);}}>
-              {this.props.songAddedId === song.track.id ?
-                (<i className="fa fa-check add-song" aria-hidden="true" />) :
-                (<i className="fa fa-plus add-song" aria-hidden="true" />)
-              }
-            </p>
-          )}
-
-          {this.props.viewType == 'songs' && (
+          {/* {this.props.viewType == 'songs' && (
             <p className='add-song'>
               <i className="fa fa-check" aria-hidden="true"/>
             </p>
-          )}
+          )} */}
 
           <div className='song-title'>
             <p>{ song.track.name }</p>
@@ -73,8 +104,15 @@ class SongList extends Component {
 
   render() {
 
+
+
     return (
       <div>
+        {this.state.selectedSong!==null && this.props.headerTitle==='GeneratePlaylist' && (
+          <div>
+            {this.selectSong()}
+          </div>
+        )}
         <div className='song-header-container'>
           <div className='song-title-header'>
             <p>Title</p>
@@ -91,9 +129,12 @@ class SongList extends Component {
           <div className='song-length-header'>
             <p><i className="fa fa-clock-o" aria-hidden="true" /></p>
           </div>
+          <div className='song-length-header'>
+            <p><i className="fa fa-clock-o" aria-hidden="true" /></p>
+          </div>
         </div>
         {
-          this.props.songs && !this.props.fetchSongsPending && !this.props.fetchPlaylistSongsPending && this.renderSongs()
+          this.props.songs && !this.props.fetchPlaylistSongsPending && this.renderSongs()
         }
 
       </div>
@@ -123,6 +164,7 @@ SongList.propTypes = {
   resumeSong: PropTypes.func,
   pauseSong: PropTypes.func,
   addSongToLibrary: PropTypes.func,
+  headerTitle: PropTypes.string
 };
 
 export default SongList;

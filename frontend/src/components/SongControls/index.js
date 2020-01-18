@@ -13,7 +13,9 @@ const mapStateToProps = (state) => {
     timeElapsed: state.songsReducer.timeElapsed,
     songPaused: state.songsReducer.songPaused,
     songDetails: state.songsReducer.songDetails,
-    songs: state.songsReducer.songs
+    songs: state.songsReducer.songs,
+    token: state.tokenReducer.token,
+    spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer
   };
 
 };

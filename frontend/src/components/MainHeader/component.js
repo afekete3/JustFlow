@@ -58,7 +58,7 @@ class MainHeader extends Component{
 
         { this.props.headerTitle === 'GeneratePlaylist' &&(
           <div>
-            <h3>Select a Song</h3>
+            <h3>Generate Playlist</h3>
             <TrackSearch />
           </div>
         )}

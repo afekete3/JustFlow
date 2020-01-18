@@ -61,7 +61,7 @@ class App extends Component {
 		if(window.Spotify !== undefined){
 			clearInterval(this.playerCheckInterval);
 		  this.player = new window.Spotify.Player({
-			  name: '12-inch Cock',
+			  name: 'JustFlow',
 			  getOAuthToken: callback =>{
 				  
 				  callback(this.props.token);
@@ -72,11 +72,8 @@ class App extends Component {
 		  this.player.connect().then(success=>{
 			  if(success){
 				  console.log('The Web Playback SDK successfully connected to Spotify!');
-				  // 
 				  this.createEventHandlers();
-
 				  tempThis.setState({spotifyPlayer: this.player, device_id: this.player.device_id})
-				  
 			  }
 			  else{
 				  console.log("Uncessful connection")
@@ -102,9 +99,7 @@ class App extends Component {
 	  }
 
 	startPlayer(){
-		console.log("player", this.state.spotifyPlayer)
 		if(this.state.spotifyPlayer!==null){
-			console.log('WOOOOO')
 			console.log(this.state.spotifyPlayer);
 			this.state.spotifyPlayer.togglePlay().then(()=>{
 				console.log('PLAYING ')
@@ -116,7 +111,6 @@ class App extends Component {
 		this.player.addListener('initialization_error', e => { console.error(e); });
 		this.player.addListener('authentication_error', e => {
 		  console.error(e);
-		//   this.setState({ loggedIn: false });
 		});
 		this.player.addListener('account_error', e => { console.error(e); });
 		this.player.addListener('playback_error', e => { console.error(e); });
@@ -130,13 +124,8 @@ class App extends Component {
 		// Ready
 		this.player.addListener('ready',  data => {
 			let { device_id } = data;
-			console.log("Let the music play on!");
-			console.log("player going in", this.player)
 			this.props.updateSpotifyPlayer(this.player)
 			this.setState({ deviceId: device_id });
-
-			// this.transferPlaybackHere()
-			// this.playerCheckInterval = setInterval(() => this.startPlayer(), 1000);
 
 		});
 	  }

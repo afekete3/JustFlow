@@ -64,19 +64,12 @@ class SongList extends Component {
 
       return (
         <li onClick={()=>{
-          console.log("song", song)
           this.setState({selectedSong: song})
         }} className={song.track.id === this.props.songId ? 'active user-song-item' : 'user-song-item'} key={ i }>
           <div onClick={() => {this.playSong(song) } } className='play-song'>
             <i className={`fa ${buttonClass} play-btn`} aria-hidden="true"/>
             <Icon circular name='play' inverted color='grey'  link/>
           </div>
-
-          {/* {this.props.viewType == 'songs' && (
-            <p className='add-song'>
-              <i className="fa fa-check" aria-hidden="true"/>
-            </p>
-          )} */}
 
           <div className='song-title'>
             <p>{ song.track.name }</p>

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
 import './PlaylistHome.css';
-
 import { Card, Image } from 'semantic-ui-react'
 
 

@@ -10,7 +10,7 @@ from models import organize_model
 
 organize = Blueprint('organize', __name__, template_folder='templates')
 
-@organize.route("/organize", methods=["GET"])
+@organize.route("/organize", methods=["POST"])
 def organize_playlist():
     data = request.get_json(force=True)
     if len(data) == 0: 

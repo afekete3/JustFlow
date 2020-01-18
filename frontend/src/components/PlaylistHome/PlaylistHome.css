@@ -1,3 +1,7 @@
 .card-main{
     font-family: 'Proxima Nova', Georgia, sans-serif;
 }
+.ui.card,
+.ui.cards>.card {
+  background-color: rgb(179, 179, 179);
+}

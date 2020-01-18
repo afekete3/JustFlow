@@ -27,3 +27,8 @@ button {
 	border: none;
 	outline: none;
 }
+
+.wide-search{
+	font-size: 20px;
+	width: 700px;
+}

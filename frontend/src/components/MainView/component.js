@@ -37,7 +37,7 @@ const MainView = ({ headerTitle, audioControl, resumeSong, pauseSong }) => {
 
 };
 
-MainView.PropTypes = {
+MainView.propTypes = {
   headerTitle: PropTypes.string,
   audioControl: PropTypes.func,
   resumeSong: PropTypes.func,

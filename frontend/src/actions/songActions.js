@@ -181,3 +181,10 @@ export const updateViewType = (view) => {
     view
   };
 };
+
+export const setSelectedSongs = (selectedSongs) => {
+  return {
+    type: 'SET_SELECTED_SONGS', 
+    selectedSongs
+  }
+}

@@ -4,7 +4,8 @@ const defaultState = {
   timeElapsed: 0,
   songId: 0,
   viewType:'songs',
-  songPaused: true
+  songPaused: true, 
+  selectedSongs : []
 };
 
 export const songsReducer = (state = defaultState, action) => {
@@ -163,6 +164,12 @@ export const songsReducer = (state = defaultState, action) => {
       ...state,
       timeElapsed: action.time
     };
+
+  case "SET_SELECTED_SONGS":
+    return{
+      ...state, 
+      selectedSongs : action.selectedSongs
+    }
 
   default:
     return state;

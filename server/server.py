@@ -10,15 +10,21 @@ from routes.generate import generate
 from flask_pymongo import PyMongo
 from flask_mongoengine import MongoEngine
 import json
+from cache import cache
 
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)
+DB_URL = 'mongodb+srv://JustFlowAdmin:'+passwords['db_password']+'@justflow-l8dim.mongodb.net/JustFlow?retryWrites=true&w=majority'
 
 app = Flask(__name__)
 PORT = 8080
-DB_URL = 'mongodb+srv://JustFlowAdmin:'+passwords['db_password']+'@justflow-l8dim.mongodb.net/JustFlow?retryWrites=true&w=majority'
-app.config['MONGODB_HOST'] = DB_URL
+
+config = { 'CACHE_TYPE' : 'simple', 
+            'MONGODB_HOST' : DB_URL}
+app.config.from_mapping(config)
 db = MongoEngine(app)
+
+cache.init_app(app)
 
 app.register_blueprint(auth, url_prefix='')
 app.register_blueprint(organize, url_prefix='/playlist')

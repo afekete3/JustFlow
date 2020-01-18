@@ -17,6 +17,7 @@ export const fetchAlbumsError = () => {
 	};
 };
 
+
 export const fetchAlbums = (accessToken) => {
 	return dispatch => {
 		const request = new Request(`https://api.spotify.com/v1/me/albums`, {

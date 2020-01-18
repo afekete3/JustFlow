@@ -1,7 +1,4 @@
-import json
-from flask import Flask, request, redirect, g, render_template, Blueprint, Response, jsonify, make_response
-import requests
-from urllib.parse import quote
+from flask import Flask, request, Blueprint, Response, jsonify, make_response
 import sys
 from controllers import track
 from models import organize_model

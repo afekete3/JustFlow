@@ -12,6 +12,7 @@ from flask_mongoengine import MongoEngine
 import json
 from cache import cache
 from flask_cors import CORS
+from flask_cors import CORS
 
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)

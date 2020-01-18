@@ -12,9 +12,9 @@ def generate(seed_song, all_tracks, num_of_songs):
     for track in all_tracks: 
         dis = -distance.euclidean(seed_song['chroma'], track['chroma'])
         euclidean[track['_id']] = dis
-        # heapq.heappush(playlist, (dis, track))
-        # if len(playlist) > num_of_songs: 
-        #     heapq.heappop(playlist)
+        heapq.heappush(playlist, (dis, track))
+        if len(playlist) > num_of_songs: 
+            heapq.heappop(playlist)
     # making the list of songs not a tuple 
     new_playlist = []
     for track in playlist:

@@ -1,0 +1,8 @@
+flask 
+flask_pymongo
+flask_mongoengine
+dnspython
+librosa
+numpy 
+scipy 
+sklearn

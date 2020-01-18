@@ -7,11 +7,12 @@ import sys
 
 
 auth = Blueprint('auth', __name__, template_folder='templates')
+with open('passwords.json', 'r') as file: 
+    passwords = json.load(file)
 
 #  Client Keys
 CLIENT_ID = "e82e0eb0f4a846239ea74e71b554d459"
-CLIENT_SECRET = "4f37ff7b309d472cbf5c651ed17773e5"
-
+CLIENT_SECRET = passwords['CLIENT_SECRET']
 # Spotify URLS
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"

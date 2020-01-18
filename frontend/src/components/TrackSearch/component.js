@@ -20,11 +20,11 @@ class TrackSearch extends Component {
 	renderSearch() {
 
 		return(
-			<div>
-				<Input icon='search' onChange={this.updateSearchTerm} inverted placeholder='Search...' />
+			<div >
+				{/* <Input icon='search' onChange={this.updateSearchTerm} inverted placeholder='Search...' /> */}
 				<Form inverted onSubmit={() => { this.props.searchSongs(this.state.searchTerm, this.props.token);}}>
 					<Form.Group>
-						<Form.Input onChange={this.updateSearchTerm} placeholder='Search...'/>
+						<Form.Input  onChange={this.updateSearchTerm} placeholder='Search...'/>
 					</Form.Group>
 				</Form>
 			</div>

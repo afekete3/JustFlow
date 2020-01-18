@@ -5,6 +5,7 @@ from urllib.parse import quote
 import sys
 
 
+
 auth = Blueprint('auth', __name__, template_folder='templates')
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)
@@ -23,7 +24,7 @@ SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 CLIENT_SIDE_URL = "http://127.0.0.1"
 PORT = 8080
 REDIRECT_URI = "{}:{}/callback".format(CLIENT_SIDE_URL, PORT)
-SCOPE = "playlist-modify-public playlist-modify-private"
+SCOPE = "playlist-modify-public playlist-modify-private ugc-image-upload user-read-playback-state streaming user-read-email playlist-read-collaborative user-modify-playback-state user-read-private user-library-modify user-top-read user-read-currently-playing app-remote-control user-read-recently-played user-library-read"
 STATE = ""
 SHOW_DIALOG_bool = True
 SHOW_DIALOG_str = str(SHOW_DIALOG_bool).lower()

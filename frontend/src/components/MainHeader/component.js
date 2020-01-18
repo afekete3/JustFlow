@@ -22,8 +22,6 @@ const MainHeader = ({
   let currentPlaylist;
   let currentArtist;
 
-  console.log(viewType);
-
   if(viewType === 'playlist') {
     currentPlaylist = playlists.filter(playlist => {
       return playlist.name === headerTitle;

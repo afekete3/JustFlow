@@ -11,12 +11,14 @@ from flask_pymongo import PyMongo
 from flask_mongoengine import MongoEngine
 import json
 from cache import cache
+from flask_cors import CORS
 
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)
 DB_URL = 'mongodb+srv://JustFlowAdmin:'+passwords['db_password']+'@justflow-l8dim.mongodb.net/JustFlow?retryWrites=true&w=majority'
 
 app = Flask(__name__)
+cors = CORS(app)
 PORT = 8080
 
 config = { 'CACHE_TYPE' : 'simple', 

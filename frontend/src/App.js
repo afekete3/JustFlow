@@ -4,9 +4,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { fetchUser } from './actions/userActions';
 import { setToken } from './actions/tokenActions';
+import {updateSpotifyPlayer, updateCurrentState} from './actions/spotifyPlayerActions'
 import { playSong, stopSong, pauseSong, resumeSong } from './actions/songActions';
+import {updateHeaderTitle} from './actions/uiActions';
 import './App.css';
-
+import queryString from 'query-string'
 import Header from './components/Header';
 import Footer from './components/Footer';
 import UserPlaylists from './components/UserPlaylists';
@@ -17,61 +19,127 @@ import SideMenu from './components/SideMenu';
 
 class App extends Component {
 
-
+	constructor(props){
+		super(props);
+		this.state = {
+			spotifyPlayer: null,
+			device_id: null,
+			accessToken: null,
+			firstAuth: true,
+			authenticated: false
+		  };
+		
+		this.playerCheckInterval = null;
+		this.player = null;
+	}
 	
-
 	static audio;
 
-	componentDidMount() {
+	async componentDidMount() {
 
+		let parsed = queryString.parse(window.location.search)
+		if(parsed['access_token']===undefined){
+			window.location = 'http://localhost:8080/';
+			this.setState({authenticated: true})
+		}
 		
-
-	  let hashParams = {};
-	  let e, r = /([^&;=]+)=?([^&;]*)/g,
-	    q = window.location.hash.substring(1);
-	  while ( e = r.exec(q)) {
-	    hashParams[e[1]] = decodeURIComponent(e[2]);
-	  }
-
-	  if(!hashParams.access_token) {
-	    window.location.href = 'https://accounts.spotify.com/authorize?client_id=230be2f46909426b8b80cac36446b52a&scope=playlist-read-private%20playlist-read-collaborative%20playlist-modify-public%20user-read-recently-played%20playlist-modify-private%20ugc-image-upload%20user-follow-modify%20user-follow-read%20user-library-read%20user-library-modify%20user-read-private%20user-read-email%20user-top-read%20user-read-playback-state&response_type=token&redirect_uri=http://localhost:3000/callback';
-	  } else {
-	    this.props.setToken(hashParams.access_token);
-	  }
-
-	  window.onSpotifyWebPlaybackSDKReady = () => {
-		// You can now initialize Spotify.Player and use the SDK
-		var player = new Spotify.Player({
-			name: '12-inch Cock',
-			getOAuthToken: callback =>{
-				// window.location.href = 'https://accounts.spotify.com/authorize?client_id=230be2f46909426b8b80cac36446b52a&scope=playlist-read-private%20playlist-read-collaborative%20playlist-modify-public%20user-read-recently-played%20playlist-modify-private%20ugc-image-upload%20user-follow-modify%20user-follow-read%20user-library-read%20user-library-modify%20user-read-private%20user-read-email%20user-top-read%20user-read-playback-state&response_type=token&redirect_uri=http://localhost:3000/callback';
-	    		// this.props.setToken(hashParams.access_token);
-				callback(hashParams.access_token);
-			},
-			volume: 0.5
-		})
-		player.connect().then(success=>{
-			if(success){
-				console.log('The Web Playback SDK successfully connected to Spotify!');
-				player.getCurrentState().then(state => {
-					if (!state) {
-						console.error('User is not playing music through the Web Playback SDK');
-						return;
-					  }
-					  let {
-						current_track,
-						next_tracks: [next_track]
-					  } = state.track_window;
-					
-					  console.log('Currently Playing', current_track);
-					  console.log('Playing Next', next_track);
-				})
+		else{
+			if(this.state.firstAuth !== false){
+				let parsed = queryString.parse(window.location.search)
+				let accessToken = parsed['access_token']
+				this.props.setToken(accessToken)
+				
+				this.setState({accessToken: accessToken, firstAuth: false})
+				this.playerCheckInterval = setInterval(() => this.checkForPlayer(), 1000);
 			}
-		});
-
-	};
-
+			
+		}
+		this.props.updateHeaderTitle('Home')
 	}
+
+	checkForPlayer(){
+		if(window.Spotify !== undefined){
+			clearInterval(this.playerCheckInterval);
+		  this.player = new window.Spotify.Player({
+			  name: '12-inch Cock',
+			  getOAuthToken: callback =>{
+				  
+				  callback(this.props.token);
+			  },
+			  volume: 0.2
+		  });
+		  var tempThis = this;
+		  this.player.connect().then(success=>{
+			  if(success){
+				  console.log('The Web Playback SDK successfully connected to Spotify!');
+				  // 
+				  this.createEventHandlers();
+
+				  tempThis.setState({spotifyPlayer: this.player, device_id: this.player.device_id})
+				  
+			  }
+			  else{
+				  console.log("Uncessful connection")
+			  }
+		  });
+		  
+		}
+	}
+
+	transferPlaybackHere() {
+		const { device_id, token } = this.state;
+		fetch("https://api.spotify.com/v1/me/player", {
+		  method: "PUT",
+		  headers: {
+			authorization: `Bearer ${this.props.token}`,
+			"Content-Type": "application/json",
+		  },
+		  body: JSON.stringify({
+			"device_ids": [ device_id ],
+			"play": true,
+		  }),
+		});
+	  }
+
+	startPlayer(){
+		console.log("player", this.state.spotifyPlayer)
+		if(this.state.spotifyPlayer!==null){
+			console.log('WOOOOO')
+			console.log(this.state.spotifyPlayer);
+			this.state.spotifyPlayer.togglePlay().then(()=>{
+				console.log('PLAYING ')
+			});
+		}
+	}
+
+	createEventHandlers() {
+		this.player.addListener('initialization_error', e => { console.error(e); });
+		this.player.addListener('authentication_error', e => {
+		  console.error(e);
+		//   this.setState({ loggedIn: false });
+		});
+		this.player.addListener('account_error', e => { console.error(e); });
+		this.player.addListener('playback_error', e => { console.error(e); });
+	  
+		// Playback status updates
+		this.player.addListener('player_state_changed', state => { 
+			console.log(state); 
+			this.props.updateCurrentState(state);
+		});
+	  
+		// Ready
+		this.player.addListener('ready',  data => {
+			let { device_id } = data;
+			console.log("Let the music play on!");
+			console.log("player going in", this.player)
+			this.props.updateSpotifyPlayer(this.player)
+			this.setState({ deviceId: device_id });
+
+			// this.transferPlaybackHere()
+			// this.playerCheckInterval = setInterval(() => this.startPlayer(), 1000);
+
+		});
+	  }
 
 	componentWillReceiveProps(nextProps) {
 	  if(nextProps.token) {
@@ -101,8 +169,10 @@ class App extends Component {
 	resumeSong = () => {
 	  if(this.audio) {
 	    this.props.resumeSong();
-	    this.audio.play();
+		this.audio.play();
+		
 	  }
+	  
 	}
 
 	audioControl = (song) => {
@@ -123,6 +193,9 @@ class App extends Component {
 	}
 
 	render() {
+		
+		
+
 	  return (
 
 	    <div className='App'>
@@ -170,14 +243,17 @@ App.propTypes = {
   stopSong: PropTypes.func,
   resumeSong: PropTypes.func,
   volume: PropTypes.number,
-  SpotifyPlayer: PropTypes.object
+  spotifyPlayer: PropTypes.object,
+  playerState: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
 
   return {
     token: state.tokenReducer.token,
-    volume: state.soundReducer.volume
+	volume: state.soundReducer.volume,
+	spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer,
+	playerState: PropTypes.object
   };
 
 };
@@ -190,7 +266,10 @@ const mapDispatchToProps = dispatch => {
     playSong,
     stopSong,
     pauseSong,
-    resumeSong
+	resumeSong,
+	updateSpotifyPlayer,
+	updateCurrentState,
+	updateHeaderTitle
   },dispatch);
 
 };

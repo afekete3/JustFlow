@@ -39,7 +39,7 @@ const SideMenu = ({
       </li>
 
       <li className='side-menu-item'>
-        <button onClick={handleGenerateClick} className='new-playlist-btn'>Create Playlist</button>
+        <button onClick={handleGenerateClick} className='new-playlist-btn'>Generate Playlist</button>
       </li>
     </ul>
   );

@@ -7,9 +7,15 @@ import {Icon} from 'semantic-ui-react';
 
 class SongControls extends Component {
 
-	state = {
-	  timeElapsed: this.props.timeElapsed
-	};
+	constructor(props) {
+    
+		super(props);
+		this.state = {
+		  spotifyPlayer: props.spotifyPlayer,
+		  timeElapsed: props.timeElapsed
+		};
+		
+	  }
 
 	componentWillReceiveProps(nextProps) {
 
@@ -23,7 +29,8 @@ class SongControls extends Component {
 	  }
 
 	  this.setState({
-	    timeElapsed: nextProps.timeElapsed
+		timeElapsed: nextProps.timeElapsed,
+		spotifyPlayer: nextProps.spotifyPlayer
 	  });
 
 	}
@@ -70,6 +77,16 @@ class SongControls extends Component {
 	  currentIndex === 0 ? audioControl(songs[songs.length - 1]) : audioControl(songs[currentIndex - 1]);
 	}
 
+	playSong = () =>{
+		if(this.state.spotifyPlayer!==null){
+			console.log('WOOOOO')
+			console.log(this.state.spotifyPlayer);
+			this.state.spotifyPlayer.togglePlay().then(()=>{
+				console.log('PLAYING ')
+			});
+		}
+	}
+
 	render() {
 
 	  return (
@@ -87,7 +104,7 @@ class SongControls extends Component {
 	        </div>
 
 			{this.props.songPaused===true &&(
-				<div className='play-btn' onClick={!this.props.songPaused ? this.props.pauseSong : this.props.resumeSong}>
+				<div className='play-btn' onClick={this.playSong}>
 					<Icon name='play' inverted color='grey'  link size='small'/>
 				</div>
 			)}
@@ -118,6 +135,7 @@ class SongControls extends Component {
 }
 
 SongControls.propTypes = {
+	token: PropTypes.string,
   timeElapsed: PropTypes.number,
   songPlaying: PropTypes.bool,
   songPaused: PropTypes.bool,
@@ -129,7 +147,9 @@ SongControls.propTypes = {
   pauseSong: PropTypes.func,
   songs: PropTypes.array,
   songDetails: PropTypes.object,
-  audioControl: PropTypes.func
+  audioControl: PropTypes.func,
+  spotifyPlayer: PropTypes.object
 };
 
-export default SongControls;
+
+export default (SongControls);

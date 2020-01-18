@@ -69,22 +69,22 @@ def get_by_id(track_id, access_token):
         return add_new_track(track_id, access_token)
 
 # used to cahce the db, not sure if its working
-def memoize(func):
-    cache = dict()
+# def memoize(func):
+#     cache = dict()
 
-    def memoized_func(*args):
-        print(cache)
-        if args in cache:
-            print('in cache')
-            return cache[args]
-        result = func(*args)
-        cache[args] = result
-        print(cache)
-        return result
+#     def memoized_func(*args):
+#         print(cache)
+#         if args in cache:
+#             print('in cache')
+#             return cache[args]
+#         result = func(*args)
+#         cache[args] = result
+#         print(cache)
+#         return result
     
-    return memoized_func
+#     return memoized_func
 
-def get_all(genre):
+def get_all():
     all_tracks = Track.objects
     return all_tracks
 

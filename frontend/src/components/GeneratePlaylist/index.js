@@ -17,6 +17,7 @@ const mapStateToProps = (state) => {
       songId: state.songsReducer.songId,
       songAddedId: state.userReducer.songId || '',
       viewType: state.songsReducer.viewType,
+      selectedSongs : state.songsReducer.selectedSongs
     };
   
   };

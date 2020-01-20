@@ -21,6 +21,11 @@ class GeneratePlaylist extends Component{
         
     }
 
+    componentWillUnmount(){
+        // clear the selected songs 
+        this.props.setSelectedSongs([])
+    }
+
     selectSong(){
         if(this.props.selectedSongs.length > 0){
             return  (<div>
@@ -78,7 +83,8 @@ GeneratePlaylist.propTypes={
         PropTypes.string,
         PropTypes.array
       ]),
-      selectedSongs : PropTypes.array
+      selectedSongs : PropTypes.array, 
+      setSelectedSongs : PropTypes.func, 
 };
 
 export default GeneratePlaylist;

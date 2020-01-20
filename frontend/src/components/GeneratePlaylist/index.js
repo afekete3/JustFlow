@@ -1,7 +1,7 @@
 import GeneratePlaylist from './component';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { fetchSongs } from '../../actions/songActions';
+import { fetchSongs, setSelectedSongs } from '../../actions/songActions';
 
 const mapStateToProps = (state) => {
 
@@ -23,6 +23,7 @@ const mapStateToProps = (state) => {
   
     return bindActionCreators({
       fetchSongs,
+      setSelectedSongs
     }, dispatch);
   
   };

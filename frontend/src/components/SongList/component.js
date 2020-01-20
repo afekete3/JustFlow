@@ -11,6 +11,11 @@ class SongList extends Component {
     super(props)
   }
 
+  componentWillUnmount(){
+    // just want to remove the songs from the list
+    this.props.clearSongs()
+  }
+
   playSong = (song) =>{
     (song.track.id === this.props.songId) && this.props.songPlaying && this.props.songPaused ? this.props.resumeSong() :
             this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
@@ -121,7 +126,8 @@ SongList.propTypes = {
   pauseSong: PropTypes.func,
   addSongToLibrary: PropTypes.func,
   headerTitle: PropTypes.string, 
-  setSelectedSongs : PropTypes.func
+  setSelectedSongs : PropTypes.func, 
+  clearSongs : PropTypes.func, 
 };
 
 export default SongList;

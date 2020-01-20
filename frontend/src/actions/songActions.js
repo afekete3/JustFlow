@@ -1,5 +1,4 @@
 import uniqBy from 'lodash/uniqBy';
-import { setArtistIds } from './artistActions';
 
 export const fetchSongsPending = () => {
   return {
@@ -42,8 +41,6 @@ export const fetchSongs = (accessToken) => {
       }).map(item => {
         return item.track.artists[0].id;
       }).join(',');
-
-      dispatch(setArtistIds(artistIds));
 
       dispatch(fetchSongsSuccess(res.items));
     }).catch(err => {
@@ -99,6 +96,14 @@ export const searchSongs = (searchTerm, accessToken) => {
     });
   };
 };
+
+export const clearSongs = () => {
+  let songs = ''
+  return {
+    type : 'CLEAR_SONGS', 
+    songs
+  }
+}
 
 export const fetchRecentlyPlayedPending = () => {
   return {

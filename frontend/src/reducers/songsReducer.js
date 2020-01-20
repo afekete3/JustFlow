@@ -171,6 +171,12 @@ export const songsReducer = (state = defaultState, action) => {
       selectedSongs : action.selectedSongs
     }
 
+  case "CLEAR_SONGS":
+    return{
+      ...state, 
+      songs : action.songs
+    }
+
   default:
     return state;
   }

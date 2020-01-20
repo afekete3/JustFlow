@@ -6,10 +6,10 @@ export const spotifyPlayerReducer = (state = { }, action) => {
         spotifyPlayer: action.spotifyPlayer
       };
 
-    case "UPDATE_CURRENT_STATE":
+    case "UPDATE_PLAYER_CURRENT_STATE":
       return{
         ...state,
-        currentState: action.currentState
+        currentPlayerState: action.currentPlayerState
       }
   
     default:

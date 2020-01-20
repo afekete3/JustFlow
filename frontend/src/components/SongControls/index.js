@@ -15,7 +15,8 @@ const mapStateToProps = (state) => {
     songDetails: state.songsReducer.songDetails,
     songs: state.songsReducer.songs,
     token: state.tokenReducer.token,
-    spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer
+    spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer,
+    currentPlayerState: state.spotifyPlayerReducer.currentPlayerState
   };
 
 };

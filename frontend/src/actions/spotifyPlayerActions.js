@@ -5,9 +5,9 @@ export const updateSpotifyPlayer = (spotifyPlayer) => {
     };
   };
 
-export const updateCurrentState = (currentState)=>{
+export const updateCurrentPlayerState = (currentPlayerState)=>{
   return{
-    type: 'UPDATE_CURRENT_STATE',
-    currentState
+    type: 'UPDATE_PLAYER_CURRENT_STATE',
+    currentPlayerState
   }
 }

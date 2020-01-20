@@ -98,3 +98,19 @@
 	margin-top: 20px;
 	margin-left: 40px;
 }
+
+.organize-btn{
+  background: #1db954;
+  font-family: 'Proxima Nova', Georgia, sans-serif;
+  color: #fff;
+  border: none;
+  margin-top: 10px;
+  border-radius: 20px;
+  padding: 10px;
+  width: 130px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  outline: none;
+  margin-left: 20px;
+}

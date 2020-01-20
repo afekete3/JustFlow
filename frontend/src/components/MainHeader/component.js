@@ -1,132 +1,141 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TrackSearch from '../TrackSearch';
 import './MainHeader.css';
 
-const MainHeader = ({
-  pauseSong,
-  resumeSong,
-  fetchCategories,
-  fetchNewReleases,
-  fetchFeatured,
-  updateHeaderTitle,
-  updateViewType,
-  songPaused,
-  headerTitle,
-  viewType,
-  playlists,
-  token,
-  artists
-}) => {
 
-  let currentPlaylist;
-  let currentArtist;
+class MainHeader extends Component{
 
-  if(viewType === 'playlist') {
-    currentPlaylist = playlists.filter(playlist => {
-      return playlist.name === headerTitle;
-    })[0];
+  constructor(props){
+    super(props);
+    this.state = {
+      currentPlaylist: null
+    };
   }
 
-  if(viewType === 'Artist' && artists.length > 0) {
-    currentArtist = artists.filter(artist => {
-      return artist.name === headerTitle;
-    })[0];
+  reorderPlaylist(ordered_ids){
+    var sortedSongs = [];
+    for (var i =0; i< ordered_ids.length; i++){
+      var index = 0;
+      for (var j =0; j< this.props.songs.length; j++){
+        if(this.props.songs[j].track.id===ordered_ids[i]){
+          index = j;
+          break;
+        }       
+      }
+      console.log("Original", index);
+      console.log('new', i);
+
+      const request = new Request(`https://api.spotify.com/v1/playlists/${this.state.currentPlaylist.id}/tracks`, {
+      method: "PUT",
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.props.token,
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify({
+        range_start: index,
+        insert_before: i
+      })
+    })
+    fetch(request).then(res =>{
+      console.log("before",this.props.songs);
+      sortedSongs = res
+      this.props.fetchPlaylistSongs(this.state.currentPlaylist.owner.id, this.state.currentPlaylist.id, this.props.token);
+      console.log("after",this.props.songs);
+
+    });
+
+
+      // this.props.reorderPlaylistTrack(this.state.currentPlaylist.id, this.props.token, index, i);
+    }
   }
 
-  return (
 
-    <div className='section-title'>
+  organizePlaylist=() =>{
+    console.log("current playlist", this.state.currentPlaylist)
 
-      { headerTitle==='Home' && (
-        <div>
-          <h3>Your Library</h3>
-        </div>
-      )}
+    var unordered_ids = [];
+    for (var i =0; i< this.props.songs.length; i++){
+      unordered_ids.push(this.props.songs[i].track.id)       
+    }
 
-      { headerTitle === 'GeneratePlaylist' &&(
-        <div>
-          <h3>Select a Song</h3>
-          <TrackSearch />
-        </div>
-      )}
-      {viewType === 'playlist' && (
-        <div className='playlist-title-container'>
-          <div className='playlist-image-container'>
-            <img className='playlist-image' src={currentPlaylist.images[0] ? currentPlaylist.images[0].url : null} />
-          </div>
-          <div className='playlist-info-container'>
-            <p className='playlist-text'>PLAYLIST</p>
-            <h3 className='header-title'>{headerTitle}</h3>
-            <p className='created-by'>Created By: <span className='lighter-text'>{currentPlaylist.owner.display_name}</span> - {currentPlaylist.tracks.total} songs</p>
-            <button
-              onClick={!songPaused ? pauseSong : resumeSong}
-              className='main-pause-play-btn'>
-              {songPaused ? 'PLAY' : 'PAUSE'}
-            </button>
+    fetch("http://localhost:8080/playlist/organize", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${this.props.token}`,
+        "Content-Type": "application/json",
+        },
+		  body: JSON.stringify({
+        access_token: this.props.token,
+        ids:unordered_ids
+		  }),
+		}).then(res => {
+      res.json().then(parsed=>{
+        console.log("Parsed",parsed.ordered_ids)
+        console.log(this)
+        this.reorderPlaylist(parsed.ordered_ids)
+      })
+      //return res.json();
+    });
+  }
 
-          </div>
-        </div>
-      )}
+  render(){
+    
 
+    if(this.props.viewType === 'playlist') {
+      let tempPlaylist = this.props.playlists.filter(playlist => {
+        return playlist.name === this.props.headerTitle;
+      })[0];
+      if(this.state.currentPlaylist===null || this.state.currentPlaylist.name!==tempPlaylist.name){
+        this.setState({currentPlaylist: tempPlaylist})
+      }
       
+    }
 
-      {/* {viewType === 'Artist' && currentArtist && (
-        <div>
-          <div className='current-artist-header-container'>
-            <img className='current-artist-image' src={currentArtist.images[0].url} />
-            <div className='current-artist-info'>
-              <p>Artist from your library</p>
-              <h3>{currentArtist.name}</h3>
+    return (
+
+      <div className='section-title'>
+
+        { this.props.headerTitle==='Home' && (
+          <div>
+            <h3>Your Library</h3>
+          </div>
+        )}
+
+        { this.props.headerTitle === 'GeneratePlaylist' &&(
+          <div>
+            <h3>Generate Playlist</h3>
+            <TrackSearch />
+          </div>
+        )}
+        {this.props.viewType === 'playlist' && this.state.currentPlaylist!==null && (
+          <div className='playlist-title-container'>
+            <div className='playlist-image-container'>
+              <img className='playlist-image' src={this.state.currentPlaylist.images[0] ? this.state.currentPlaylist.images[0].url : null} />
+            </div>
+            <div className='playlist-info-container'>
+              <p className='playlist-text'>PLAYLIST</p>
+              <h3 className='header-title'>{this.props.headerTitle}</h3>
+              <p className='created-by'>Created By: <span className='lighter-text'>{this.state.currentPlaylist.owner.display_name}</span> - {this.state.currentPlaylist.tracks.total} songs</p>
+              <button
+                onClick={!this.props.songPaused ? this.props.pauseSong : this.props.resumeSong}
+                className='main-pause-play-btn'>
+                {this.props.songPaused ? 'PLAY' : 'PAUSE'}
+              </button>
+              <button onClick={this.organizePlaylist} className='organize-btn'>ORGANIZE</button>
+
             </div>
           </div>
-          <button
-            onClick={!songPaused ? pauseSong : resumeSong}
-            className='main-pause-play-btn artist-button'>
-            {songPaused ? 'PLAY' : 'PAUSE'}
-          </button>
-        </div>
-      )} */}
+        )}
+      </div>
 
-      {/* {(
-        headerTitle === 'Songs'||
-				headerTitle === 'Recently Played' ||
-				headerTitle === 'Albums' ||
-				headerTitle === 'Artists') && (
-          <div>
-            <h3 className='header-title'>{headerTitle}</h3>
-            {headerTitle !== 'Artists' && (
-              <button
-                onClick={!songPaused ? pauseSong : resumeSong}
-                className='main-pause-play-btn'>
-                {songPaused ? 'PLAY' : 'PAUSE'}
-              </button>
-            )}
-
-          </div>
-        )} */}
-      {/* {(headerTitle === 'Browse') && (
-        <div>
-          <h3 className='header-title'>{headerTitle}</h3>
-          <div className='browse-headers'>
-            <p className={viewType === 'Genres' ? 'active' : ''} onClick={() => { fetchCategories(token); updateViewType('Genres'); updateHeaderTitle('Browse'); }}>Genres</p>
-            <p className={viewType === 'New Releases' ? 'active' : ''} onClick={() => { fetchNewReleases(token); updateViewType('New Releases'); updateHeaderTitle('Browse'); }}>New Releases</p>
-            <p className={viewType === 'Featured' ? 'active' : ''} onClick={() => { fetchFeatured(token); updateViewType('Featured'); updateHeaderTitle('Browse'); }}>Featured</p>
-          </div>
-        </div>
-      )} */}
-    </div>
-
-  );
-
-};
+    );
+  }
+}
 
 MainHeader.propTypes = {
   pauseSong: PropTypes.func,
   resumeSong: PropTypes.func,
-  fetchCategories: PropTypes.func,
-  fetchNewReleases: PropTypes.func,
-  fetchFeatured: PropTypes.func,
   updateHeaderTitle: PropTypes.func,
   updateViewType: PropTypes.func,
   songPaused: PropTypes.bool,
@@ -135,7 +144,9 @@ MainHeader.propTypes = {
   playlists: PropTypes.array,
   playlistMenu: PropTypes.array,
   token: PropTypes.string,
-  artists: PropTypes.array,
+  songs: PropTypes.array,
+  reorderPlaylistTrack: PropTypes.func,
+  fetchPlaylistSongs: PropTypes.func
 };
 
 export default MainHeader;

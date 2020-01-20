@@ -4,9 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { fetchUser } from './actions/userActions';
 import { setToken } from './actions/tokenActions';
-import {updateSpotifyPlayer, updateCurrentState} from './actions/spotifyPlayerActions'
-import { playSong, stopSong, pauseSong, resumeSong } from './actions/songActions';
+import {updateSpotifyPlayer, updateCurrentPlayerState} from './actions/spotifyPlayerActions'
+import { playSong, stopSong, pauseSong, resumeSong, increaseSongTime } from './actions/songActions';
 import {updateHeaderTitle} from './actions/uiActions';
+import {updateVolume} from './actions/soundActions';
 import './App.css';
 import queryString from 'query-string'
 import Header from './components/Header';
@@ -61,22 +62,19 @@ class App extends Component {
 		if(window.Spotify !== undefined){
 			clearInterval(this.playerCheckInterval);
 		  this.player = new window.Spotify.Player({
-			  name: '12-inch Cock',
+			  name: 'JustFlow',
 			  getOAuthToken: callback =>{
 				  
 				  callback(this.props.token);
 			  },
-			  volume: 0.2
+			  volume: 0.5
 		  });
 		  var tempThis = this;
 		  this.player.connect().then(success=>{
 			  if(success){
 				  console.log('The Web Playback SDK successfully connected to Spotify!');
-				  // 
 				  this.createEventHandlers();
-
 				  tempThis.setState({spotifyPlayer: this.player, device_id: this.player.device_id})
-				  
 			  }
 			  else{
 				  console.log("Uncessful connection")
@@ -88,6 +86,7 @@ class App extends Component {
 
 	transferPlaybackHere() {
 		const { device_id, token } = this.state;
+		console.log("state", this.state)
 		fetch("https://api.spotify.com/v1/me/player", {
 		  method: "PUT",
 		  headers: {
@@ -96,15 +95,13 @@ class App extends Component {
 		  },
 		  body: JSON.stringify({
 			"device_ids": [ device_id ],
-			"play": true,
+			"play": false,
 		  }),
 		});
 	  }
 
 	startPlayer(){
-		console.log("player", this.state.spotifyPlayer)
 		if(this.state.spotifyPlayer!==null){
-			console.log('WOOOOO')
 			console.log(this.state.spotifyPlayer);
 			this.state.spotifyPlayer.togglePlay().then(()=>{
 				console.log('PLAYING ')
@@ -116,28 +113,29 @@ class App extends Component {
 		this.player.addListener('initialization_error', e => { console.error(e); });
 		this.player.addListener('authentication_error', e => {
 		  console.error(e);
-		//   this.setState({ loggedIn: false });
 		});
 		this.player.addListener('account_error', e => { console.error(e); });
 		this.player.addListener('playback_error', e => { console.error(e); });
 	  
 		// Playback status updates
 		this.player.addListener('player_state_changed', state => { 
-			console.log(state); 
-			this.props.updateCurrentState(state);
+			console.log('state changed', state); 
+			this.props.updateCurrentPlayerState(state);
+			this.props.increaseSongTime(state.position/1000)
+			this.player.getVolume().then(res=>{
+				this.props.updateVolume(res*100);
+			})
+			
 		});
 	  
 		// Ready
 		this.player.addListener('ready',  data => {
 			let { device_id } = data;
-			console.log("Let the music play on!");
-			console.log("player going in", this.player)
 			this.props.updateSpotifyPlayer(this.player)
-			this.setState({ deviceId: device_id });
-
-			// this.transferPlaybackHere()
-			// this.playerCheckInterval = setInterval(() => this.startPlayer(), 1000);
-
+			this.setState({ device_id: device_id }, ()=>{
+				this.transferPlaybackHere();
+			});
+			
 		});
 	  }
 
@@ -244,7 +242,7 @@ App.propTypes = {
   resumeSong: PropTypes.func,
   volume: PropTypes.number,
   spotifyPlayer: PropTypes.object,
-  playerState: PropTypes.object
+  currentPlayerState: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
@@ -253,7 +251,7 @@ const mapStateToProps = (state) => {
     token: state.tokenReducer.token,
 	volume: state.soundReducer.volume,
 	spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer,
-	playerState: PropTypes.object
+	currentPlayerState: PropTypes.object
   };
 
 };
@@ -268,8 +266,10 @@ const mapDispatchToProps = dispatch => {
     pauseSong,
 	resumeSong,
 	updateSpotifyPlayer,
-	updateCurrentState,
-	updateHeaderTitle
+	updateCurrentPlayerState,
+	updateHeaderTitle,
+	increaseSongTime,
+	updateVolume
   },dispatch);
 
 };

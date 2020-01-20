@@ -2,7 +2,6 @@ import GeneratePlaylist from './component';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { fetchSongs } from '../../actions/songActions';
-import { addSongToLibrary } from '../../actions/userActions';
 
 const mapStateToProps = (state) => {
 
@@ -15,8 +14,6 @@ const mapStateToProps = (state) => {
       songPlaying: state.songsReducer.songPlaying,
       songPaused: state.songsReducer.songPaused,
       songId: state.songsReducer.songId,
-      songAddedId: state.userReducer.songId || '',
-      viewType: state.songsReducer.viewType,
       selectedSongs : state.songsReducer.selectedSongs
     };
   
@@ -26,7 +23,6 @@ const mapStateToProps = (state) => {
   
     return bindActionCreators({
       fetchSongs,
-      addSongToLibrary
     }, dispatch);
   
   };

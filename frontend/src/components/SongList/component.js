@@ -39,12 +39,6 @@ class SongList extends Component {
             <Icon circular name='play' inverted color='grey'  link/>
           </div>
 
-          {/* {this.props.viewType == 'songs' && (
-            <p className='add-song'>
-              <i className="fa fa-check" aria-hidden="true"/>
-            </p>
-          )} */}
-
           <div className='song-title'>
             <p>{ song.track.name }</p>
           </div>

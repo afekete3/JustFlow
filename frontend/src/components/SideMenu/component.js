@@ -7,14 +7,6 @@ import {Icon} from 'semantic-ui-react';
 const SideMenu = ({
   updateHeaderTitle,
   updateViewType,
-  fetchFeatured,
-  fetchRecentlyPlayed,
-  fetchSongs,
-  fetchAlbums,
-  fetchArtists,
-  token,
-  title,
-  artistIds
 }) => {
 
 
@@ -49,13 +41,6 @@ const SideMenu = ({
 SideMenu.propTypes = {
   updateHeaderTitle: PropTypes.func,
   updateViewType: PropTypes.func,
-  fetchFeatured: PropTypes.func,
-  fetchRecentlyPlayed: PropTypes.func,
-  fetchSongs: PropTypes.func,
-  fetchAlbums: PropTypes.func,
-  fetchArtists: PropTypes.func,
-  token: PropTypes.string,
-  artistIds: PropTypes.string,
   title: PropTypes.string
 };
 

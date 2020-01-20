@@ -25,11 +25,8 @@ class YoutubeDownloader:
 
     def download_song(self, name, artists):
         try:
-            print (artists)
             # can make cleaner
             search_name = name + ' ' + ' '.join(artists) + ' audio'
-            print(search_name)
-
             request = self.youtube.search().list(
                 q = search_name,
                 part="id",
@@ -38,7 +35,6 @@ class YoutubeDownloader:
             response = request.execute()
             # getting the specific video id for each video in the playlist
             song = response['items'][0]
-            print(song)
             # downloading a specific youtube video
             url = 'https://www.youtube.com/watch?v='+song['id']['videoId']
             youtube_dl.YoutubeDL(self.YDL_OPTS).download([url])

@@ -4,9 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { fetchUser } from './actions/userActions';
 import { setToken } from './actions/tokenActions';
-import {updateSpotifyPlayer, updateCurrentState} from './actions/spotifyPlayerActions'
-import { playSong, stopSong, pauseSong, resumeSong } from './actions/songActions';
+import {updateSpotifyPlayer, updateCurrentPlayerState} from './actions/spotifyPlayerActions'
+import { playSong, stopSong, pauseSong, resumeSong, increaseSongTime } from './actions/songActions';
 import {updateHeaderTitle} from './actions/uiActions';
+import {updateVolume} from './actions/soundActions';
 import './App.css';
 import queryString from 'query-string'
 import Header from './components/Header';
@@ -66,7 +67,7 @@ class App extends Component {
 				  
 				  callback(this.props.token);
 			  },
-			  volume: 0.2
+			  volume: 0.5
 		  });
 		  var tempThis = this;
 		  this.player.connect().then(success=>{
@@ -85,6 +86,7 @@ class App extends Component {
 
 	transferPlaybackHere() {
 		const { device_id, token } = this.state;
+		console.log("state", this.state)
 		fetch("https://api.spotify.com/v1/me/player", {
 		  method: "PUT",
 		  headers: {
@@ -93,7 +95,7 @@ class App extends Component {
 		  },
 		  body: JSON.stringify({
 			"device_ids": [ device_id ],
-			"play": true,
+			"play": false,
 		  }),
 		});
 	  }
@@ -117,16 +119,23 @@ class App extends Component {
 	  
 		// Playback status updates
 		this.player.addListener('player_state_changed', state => { 
-			console.log(state); 
-			this.props.updateCurrentState(state);
+			console.log('state changed', state); 
+			this.props.updateCurrentPlayerState(state);
+			this.props.increaseSongTime(state.position/1000)
+			this.player.getVolume().then(res=>{
+				this.props.updateVolume(res*100);
+			})
+			
 		});
 	  
 		// Ready
 		this.player.addListener('ready',  data => {
 			let { device_id } = data;
 			this.props.updateSpotifyPlayer(this.player)
-			this.setState({ deviceId: device_id });
-
+			this.setState({ device_id: device_id }, ()=>{
+				this.transferPlaybackHere();
+			});
+			
 		});
 	  }
 
@@ -233,7 +242,7 @@ App.propTypes = {
   resumeSong: PropTypes.func,
   volume: PropTypes.number,
   spotifyPlayer: PropTypes.object,
-  playerState: PropTypes.object
+  currentPlayerState: PropTypes.object
 };
 
 const mapStateToProps = (state) => {
@@ -242,7 +251,7 @@ const mapStateToProps = (state) => {
     token: state.tokenReducer.token,
 	volume: state.soundReducer.volume,
 	spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer,
-	playerState: PropTypes.object
+	currentPlayerState: PropTypes.object
   };
 
 };
@@ -257,8 +266,10 @@ const mapDispatchToProps = dispatch => {
     pauseSong,
 	resumeSong,
 	updateSpotifyPlayer,
-	updateCurrentState,
-	updateHeaderTitle
+	updateCurrentPlayerState,
+	updateHeaderTitle,
+	increaseSongTime,
+	updateVolume
   },dispatch);
 
 };

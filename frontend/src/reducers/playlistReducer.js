@@ -32,6 +32,24 @@ export const playlistReducer = (state = {}, action) => {
       ...state
     };
 
+  case "REORDER_PLAYLIST_TRACK_PENDING":
+    return{
+      reorderPlaylistTrackPending: true
+    }
+
+  case "REORDER_PLAYLIST_TRACK_SUCCESS":
+    return{
+      ...state,
+      reorderPlaylistTrackPending: false,
+      songs: action.songs
+    }
+
+  case "REORDER_PLAYLIST_TRACK_ERROR":
+    return{
+      reorderPlaylistTrackPending: false,
+      reorderPlaylistTrackError: true
+    }
+
   default:
     return state;
   }

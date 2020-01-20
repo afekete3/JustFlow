@@ -92,3 +92,45 @@ export const fetchPlaylistSongs = (userId, playlistId, accessToken) => {
     });
   };
 };
+
+export const reorderPlaylistTrackPending = () => {
+  return {
+    type: 'REORDER_PLAYLIST_TRACK_PENDING'
+  };
+};
+
+export const reorderPlaylistTrackSuccess = (songs) => {
+  return {
+    type: 'REORDER_PLAYLIST_TRACK_SUCCESS',
+    songs
+  };
+};
+
+export const reorderPlaylistTrackError = () => {
+  return {
+    type: 'REORDER_PLAYLIST_TRACK_ERROR'
+  };
+};
+
+export const reorderPlaylistTrack = (playlist_id, accessToken, startIndex, endIndex) => {
+  return dispatch => {
+    const request = new Request(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
+      method: "PUT",
+      headers: new Headers({
+        'Authorization': 'Bearer ' + accessToken
+      }),
+      body: {
+        range_start: startIndex,
+        insert_before: endIndex
+      }
+    })
+
+    dispatch(reorderPlaylistTrackPending());
+
+    fetch(request).then(res=>{
+      dispatch(reorderPlaylistTrackSuccess(res));
+    }).catch(err =>{
+      dispatch(reorderPlaylistTrackError(err));
+    });
+  }
+}

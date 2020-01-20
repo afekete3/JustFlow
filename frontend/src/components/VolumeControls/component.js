@@ -14,12 +14,14 @@ class VolumeControls extends Component {
   }
 
 	updateVolume = (e) => {
-
 	  this.setState({
 	    volume: e.target.value
 	  });
 
-	  this.props.updateVolume(Math.ceil(e.target.value / 10) * 10);
+	  if(this.props.spotifyPlayer!==undefined){
+		this.props.spotifyPlayer.setVolume(e.target.value/100);
+		this.props.updateVolume(Math.ceil(e.target.value / 10) * 10);
+	  }
 	}
 
 
@@ -28,7 +30,7 @@ class VolumeControls extends Component {
 	  return (
 	    <div className='volume-container'>
 	      <i className="fa fa-volume-up" aria-hidden="true"/>
-	      <input className='volume' type="range" min={0} max={100} value={this.state.volume} onChange={this.updateVolume} />
+	      <input className='volume' type="range" min={0} max={100} value={this.props.volume} onChange={this.updateVolume} />
 	    </div>
 	  );
     
@@ -37,7 +39,8 @@ class VolumeControls extends Component {
 
 VolumeControls.propTypes = {
   volume: PropTypes.number,
-  updateVolume: PropTypes.func
+  updateVolume: PropTypes.func,
+  spotifyPlayer: PropTypes.object
 };
 
 export default VolumeControls;

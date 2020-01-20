@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 const mapStateToProps = (state) => {
 
   return {
-    albumImage: state.spotifyPlayerReducer.currentState ? state.spotifyPlayerReducer.currentState.track_window.current_track.album.images[0].url : ''
+    albumImage: state.spotifyPlayerReducer.currentPlayerState ? state.spotifyPlayerReducer.currentPlayerState.track_window.current_track.album.images[0].url : ''
   };
 
 };

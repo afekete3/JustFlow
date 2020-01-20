@@ -34,7 +34,7 @@ class GeneratePlaylist extends Component{
     };
 };
 
-GeneratePlaylist.PropTypes={
+GeneratePlaylist.propTypes={
     songId: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number

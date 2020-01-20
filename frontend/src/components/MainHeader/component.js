@@ -13,9 +13,51 @@ class MainHeader extends Component{
     };
   }
 
+  reorderPlaylist(ordered_ids){
+    var sortedSongs = [];
+    for (var i =0; i< ordered_ids.length; i++){
+      var index = 0;
+      for (var j =0; j< this.props.songs.length; j++){
+        if(this.props.songs[j].track.id===ordered_ids[i]){
+          index = j;
+          break;
+        }       
+      }
+      console.log("Original", index);
+      console.log('new', i);
+
+      const request = new Request(`https://api.spotify.com/v1/playlists/${this.state.currentPlaylist.id}/tracks`, {
+      method: "PUT",
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.props.token,
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify({
+        range_start: index,
+        insert_before: i
+      })
+    })
+    fetch(request).then(res =>{
+      console.log("before",this.props.songs);
+      sortedSongs = res
+      this.props.fetchPlaylistSongs(this.state.currentPlaylist.owner.id, this.state.currentPlaylist.id, this.props.token);
+      console.log("after",this.props.songs);
+
+    });
+
+
+      // this.props.reorderPlaylistTrack(this.state.currentPlaylist.id, this.props.token, index, i);
+    }
+  }
+
 
   organizePlaylist=() =>{
     console.log("current playlist", this.state.currentPlaylist)
+
+    var unordered_ids = [];
+    for (var i =0; i< this.props.songs.length; i++){
+      unordered_ids.push(this.props.songs[i].track.id)       
+    }
 
     fetch("http://localhost:8080/playlist/organize", {
       method: "POST",
@@ -25,11 +67,15 @@ class MainHeader extends Component{
         },
 		  body: JSON.stringify({
         access_token: this.props.token,
-        ids:["4ut5G4rgB1ClpMTMfjoIuy", "0nbXyq5TXYPCO7pr3N8S4I", "1xEcsGNqeAeeB5Yx2gmFRJ", "4Hqh0dS4x07zuRw6eBTO7p", 
-        "6LcauUZjF1eXQrgqMUecHX"]
+        ids:unordered_ids
 		  }),
 		}).then(res => {
-      return res.json();
+      res.json().then(parsed=>{
+        console.log("Parsed",parsed.ordered_ids)
+        console.log(this)
+        this.reorderPlaylist(parsed.ordered_ids)
+      })
+      //return res.json();
     });
   }
 
@@ -98,6 +144,9 @@ MainHeader.propTypes = {
   playlists: PropTypes.array,
   playlistMenu: PropTypes.array,
   token: PropTypes.string,
+  songs: PropTypes.array,
+  reorderPlaylistTrack: PropTypes.func,
+  fetchPlaylistSongs: PropTypes.func
 };
 
 export default MainHeader;

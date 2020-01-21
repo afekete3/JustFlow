@@ -14,6 +14,7 @@ class SongList extends Component {
   componentWillUnmount(){
     // just want to remove the songs from the list
     this.props.clearSongs()
+    this.props.setSelectedSongs([])
   }
 
   playSong = (song) =>{

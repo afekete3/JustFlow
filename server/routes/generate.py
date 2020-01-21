@@ -5,7 +5,7 @@ from models import generate_model, organize_model
 
 generate = Blueprint('generate', __name__, template_folder='templates')
 
-@generate.route("/generate", methods=["GET"])
+@generate.route("/generate", methods=["POST"])
 def generate_playlist():
     data = request.get_json(force=True)
     if len(data) == 0: 

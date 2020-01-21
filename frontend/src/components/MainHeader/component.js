@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TrackSearch from '../TrackSearch';
+import GeneratePlaylistHeader from '../GeneratePlaylistHeader'; 
 import './MainHeader.css';
 
 
@@ -104,8 +104,7 @@ class MainHeader extends Component{
 
         { this.props.headerTitle === 'GeneratePlaylist' &&(
           <div>
-            <h3>Generate Playlist</h3>
-            <TrackSearch />
+            <GeneratePlaylistHeader/>
           </div>
         )}
         {this.props.viewType === 'playlist' && this.state.currentPlaylist!==null && (

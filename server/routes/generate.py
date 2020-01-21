@@ -16,7 +16,5 @@ def generate_playlist():
     given_track = track.get_multiple_tracks(data['ids'], data['access_token'])
     all_tracks = track.get_all()
     # call the generate method with the machine learning
-    # print(timeit.timeit(track.get_all(2), globals=globals(), number=1))
     generated_playlist = generate_model.generate(given_track[0], all_tracks, data['num_of_songs'])
-    organized_tracks = organize_model.organize(generated_playlist)
-    return make_response({'generated_playlist_ids':organized_tracks})
+    return make_response({'generated_playlist_ids':generated_playlist})

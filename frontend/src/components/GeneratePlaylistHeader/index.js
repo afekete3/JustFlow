@@ -8,6 +8,7 @@ const mapStateToProps = (state) => {
   return {
     token: state.tokenReducer.token, 
     selectedSongs : state.songsReducer.selectedSongs, 
+    userId : state.userReducer.userId, 
   };
 
 };

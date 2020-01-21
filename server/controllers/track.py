@@ -26,23 +26,25 @@ def add_new_track(track_id, access_token):
             # might want to do this another way 
             return 'NoPreviewUrl'
         id = track['id']
+        artists = track['artists']
         name = track['name']
         preview_url = track['preview_url']
         path = download_preview(preview_url, 'default')
-        preview = get_bytes_from_file(path)
         y, sr = librosa.load(path, duration=10.0)
         mfcc = librosa.feature.mfcc(y, sr=sr).flatten()
         chroma = librosa.feature.chroma_stft(y=y, sr=sr).flatten()
         tempo = librosa.beat.beat_track(y, sr=sr, units='time')
+        spotify_download = 'preview_url' in track
 
         new_track = {
             '_id' : id,
             'preview_url' : preview_url,
+            'artists' : artists, 
             'name' : name,
             'mfcc' : mfcc.tolist(),
             'chroma' : chroma.tolist(),
-            'preview' : preview, 
-            'tempo' : tempo[0]
+            'tempo' : tempo[0], 
+            'spotify_download' : spotify_download
         }
 
         delete_file(path)
@@ -62,27 +64,12 @@ def delete(track):
 
 def get_by_id(track_id, access_token):
     try: 
-        return Track.objects.get(_id=track_id)
+        return  Track.objects.get(_id=track_id)
     except Exception as err: 
         print(err)
         print('in get_by_id method')
         return add_new_track(track_id, access_token)
-
-# used to cahce the db, not sure if its working
-# def memoize(func):
-#     cache = dict()
-
-#     def memoized_func(*args):
-#         print(cache)
-#         if args in cache:
-#             print('in cache')
-#             return cache[args]
-#         result = func(*args)
-#         cache[args] = result
-#         print(cache)
-#         return result
-    
-#     return memoized_func
+    return track
 
 def get_all():
     all_tracks = Track.objects
@@ -96,12 +83,6 @@ def get_multiple_tracks(track_ids, access_token):
             continue
         tracks.append(track)
     return tracks
-
-def get_bytes_from_file(filename):
-    output = []
-    with open(filename,'rb') as f:
-        output = f.read()  
-    return output 
 
 def download_preview(url, name):
     # Creates the file in the working directory

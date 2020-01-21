@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './GeneratePlaylistHeader.css';
-import {Form} from 'semantic-ui-react';
+import {Form, TextArea, Input} from 'semantic-ui-react';
 
 
 class GeneratePlaylistHeader extends Component{
@@ -24,9 +24,11 @@ class GeneratePlaylistHeader extends Component{
 
   generatePlaylist(){
     var seedSongIds = [];
+    
     for(let seed of this.props.selectedSongs){
       seedSongIds.push(seed.track.id);      
     }
+    console.log(seedSongIds[0])
     fetch("http://localhost:8080/playlist/generate", {
       method: "POST",
       headers: {
@@ -40,9 +42,8 @@ class GeneratePlaylistHeader extends Component{
 		  }),
 		}).then(res => {
       res.json().then(parsed=>{
-        console.log("Parsed",parsed.ordered_ids)
-        
-        this.createGeneratedPlaylist(parsed.ordered_ids);
+        console.log("Parsed",parsed.generated_ordered_ids)
+        this.createGeneratedPlaylist(parsed.generated_ordered_ids);
         // return parsed.ordered_ids; 
       })
     });
@@ -73,26 +74,37 @@ class GeneratePlaylistHeader extends Component{
 
     return (
       <div>
-      <h3>Generate Playlist</h3>
-      <Form inverted>
-        <Form.Group widths='equal'>
-          <Form.Field>
-            <label>Playlist Name</label>
-            <input placeholder='Playlist Name' onChange={e=> this.setState({'name' : e.target.value})}/>
-          </Form.Field>
-          <Form.Field>
-            <label>Playlist Size</label>
-            <input type='number' placeholder='Playlist Size' onChange={e=> this.setState({'size' : e.target.value})}/>
-          </Form.Field>
-        </Form.Group>
-        {this.props.selectedSongs.length > 0 && (
-          <div>
-            <label>Seed Songs</label>
-            {this.selectSong()}
-          </div>
-        )}
-        <button onClick={this.generatePlaylistClick} className='new-playlist-btn'>Generate</button>
-      </Form>
+        <h3>Generate Playlist</h3>
+        <Form inverted>
+          <Form.Group widths='equal'>
+            <Form.Field 
+              control={Input}
+              label = 'Playlist Name'
+              placeholder='Playlist Name' 
+              onChange={e=> this.setState({'name' : e.target.value})}
+            />
+            <Form.Field 
+              control={Input}
+              label = 'Playlist Size'
+              type='number' 
+              placeholder='Playlist Size'
+              onChange={e=> this.setState({'size' : e.target.value})} 
+            /> 
+          </Form.Group>
+          <Form.Field
+            control={TextArea}
+            label='Description'
+            placeholder='Describe the playlist...'
+            onChange={e=> this.setState({'desc' : e.target.value})}
+          />
+          {this.props.selectedSongs.length > 0 && (
+            <div>
+              <label>Seed Songs</label>
+              {this.selectSong()}
+            </div>
+          )}
+          <button onClick={this.generatePlaylistClick} className='new-playlist-btn'>Generate</button>
+        </Form>
       </div>
     );
   }
@@ -100,7 +112,8 @@ class GeneratePlaylistHeader extends Component{
 
 GeneratePlaylistHeader.propTypes = {
   selectedSongs : PropTypes.array, 
-  token: PropTypes.string, 
+  token : PropTypes.string, 
+  userId : PropTypes.string, 
 };
 
 export default GeneratePlaylistHeader;

@@ -2,13 +2,12 @@ from mongoengine import *
 
 class Track(Document):
     _id = StringField(required=True)
-    preview_url = StringField
-    name = StringField
-    mfcc = ListField
-    chroma = ListField
-    preview = BinaryField
-    tempo = IntField
-    artists = StringField
-    spotify_download = BooleanField
+    preview_url = StringField(required=True)
+    name = StringField(required=True)
+    artists = ListField(required=True)
+    mfcc = ListField(required=True)
+    chroma = ListField(required=True)
+    tempo = FloatField(required=True)
+    spotify_download = BooleanField(required=True)
     meta = {'collection' : 'tracks'}
 

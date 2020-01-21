@@ -3,9 +3,9 @@ import spotipy.util as util
 import spotipy.oauth2 as oauth2
 import json
 import requests
+import constant
 
 class SpotifyDownloader:
-    LOCAL_FILENAME = 'preview.mp3'
     def __init__(self):
         with open('passwords.json', 'r') as file: 
             passwords = json.load(file)
@@ -21,7 +21,7 @@ class SpotifyDownloader:
     def download_preview(self, url):
         # Creates the file in the working directory
         spotify_preview = requests.get(url)   
-        downloaded_preview = open(self.LOCAL_FILENAME, 'wb')
+        downloaded_preview = open(constant.LOCAL_FILENAME, 'wb')
         for chunk in spotify_preview.iter_content(chunk_size=512 * 1024): 
             if chunk: # filter out keep-alive new chunks
                 downloaded_preview.write(chunk)

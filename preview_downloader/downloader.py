@@ -9,21 +9,10 @@ from scipy.spatial import distance
 from youtube_downloader import YoutubeDownloader
 from spotify_downloader import SpotifyDownloader
 from processor import Processor
-
-LOCAL_FILENAME = 'preview.mp3'
+import constant
 
 def delete_file(path):
     os.remove(path)
-
-def download(track, song_name, artists):
-    if track['preview_url'] is None:
-        result = youtube_downloader.download_song(song_name, artists)
-        if result == False:
-            return False
-        else:
-            return result
-    else:
-        return spotify_downloader.download_preview(track['preview_url'])
 
 def get_artists(track_artists):
     artists = []
@@ -36,9 +25,18 @@ def update_track(track, song_name, artists, processor, tracks):
         tracks.update_one({'_id': track_id}, {"$set": {"name": song_name}}) 
     if "artist" not in track:
         tracks.update_one({'_id': track_id}, {"$set": {"artists": artists}})   
+    if "spotify_download" not in track: 
+        # best way i could think of for determining where the track came from
+        spotify_download = 'https://www.youtube.com/watch?v=' not in track['preview_url']
+        print(song_name + " - from spotify: " + str(spotify_download))
+        tracks.update_one({'_id': track_id}, {"$set": {"spotify_download": spotify_download}})   
+    else: 
+        spotify_download = track['spotify_download']
     if "tempo" not in track or "mfcc" not in track or "chroma" not in track:
-        if download(track, song_name, artists) == False:
-            return
+        if spotify_download: 
+            spotify_downloader.download_preview(track['preview_url']) 
+        else:
+            youtube_downloader.download_song(track['preview_url'])
         processor.load_track()
     else:
         return
@@ -51,9 +49,9 @@ def update_track(track, song_name, artists, processor, tracks):
     if "chroma" not in track:
         chroma = processor.get_chroma_features()
         tracks.update_one({'_id': track_id}, {"$set": {"chroma": chroma.tolist()}})
-    delete_file(LOCAL_FILENAME)
+    delete_file(constant.LOCAL_FILENAME)
 
-def create_track(processor, preview_url):             
+def create_track(processor, preview_url, spotify_download):             
     mfcc = processor.get_flattened_mfcc()
     chroma = processor.get_chroma_features()
     tempo = processor.get_tempo()
@@ -64,14 +62,23 @@ def create_track(processor, preview_url):
         'artists' : artists, 
         'mfcc' : mfcc.tolist(),
         'chroma' : chroma.tolist(),
-        'tempo': tempo
+        'tempo': tempo,
+        'spotify_download' : spotify_download
     }
 
+def create_missing_track(track_id, song_name):
+    return {
+        '_id' : track_id,
+        'name' : song_name
+    }
 
 # start
-with MongoClient("mongodb+srv://JustFlowAdmin:capstone123!@justflow-l8dim.mongodb.net/test?retryWrites=true&w=majority") as client:
+with open('passwords.json', 'r') as file: 
+    passwords = json.load(file)
+with MongoClient("mongodb+srv://JustFlowAdmin:"+passwords['db_password']+"@justflow-l8dim.mongodb.net/JustFlow?retryWrites=true&w=majority") as client:
     db = client.get_database('JustFlow')
     tracks = db.tracks
+    missing_tracks = db.missing_tracks
 
     youtube_downloader = YoutubeDownloader()
     spotify_downloader = SpotifyDownloader()
@@ -88,15 +95,25 @@ with MongoClient("mongodb+srv://JustFlowAdmin:capstone123!@justflow-l8dim.mongod
             song_name = track['name']  
             artists = get_artists(track['artists'])           
             if tracks.count_documents({'_id': track_id}) > 0:
+                print("updating :" + track_id)
                 update_track(tracks.find_one({'_id': track_id}), song_name, artists, processor, tracks)        
             else: 
-                preview_url = download(track, song_name, artists) 
-                if preview_url == False:
-                    continue
+                print("creating track: " + track_id)
+                if track['preview_url'] is not None:
+                    preview_url = spotify_downloader.download_preview(track['preview_url']) 
+                    spotify_download = True
+                else:
+                    preview_url = youtube_downloader.search(song_name, artists)
+                    if not preview_url:
+                        print('missing track: ' + song_name + ' ' + track_id)
+                        missing_tracks.insert_one(create_missing_track(track_id, song_name))
+                        continue
+                    youtube_downloader.download_song(preview_url)
+                    spotify_download = False            
                 processor.load_track()
-                new_track = create_track(processor, preview_url)
+                new_track = create_track(processor, preview_url, spotify_download)
                 tracks.insert_one(new_track)
-            delete_file(LOCAL_FILENAME)
+                delete_file(constant.LOCAL_FILENAME)
 
 
 

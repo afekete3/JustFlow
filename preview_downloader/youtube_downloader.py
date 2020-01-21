@@ -23,22 +23,26 @@ class YoutubeDownloader:
         developer_key = data['api-key']
         self.youtube = googleapiclient.discovery.build(self.API_SERVICE_NAME, self.API_VERSIONE, developerKey = developer_key)
 
-    def download_song(self, name, artists):
+    def download_song(self, url):
         try:
-            # can make cleaner
-            search_name = name + ' ' + ' '.join(artists) + ' audio'
-            request = self.youtube.search().list(
-                q = search_name,
-                part="id",
-                maxResults=5
-                )
-            response = request.execute()
-            # getting the specific video id for each video in the playlist
-            song = response['items'][0]
-            # downloading a specific youtube video
-            url = 'https://www.youtube.com/watch?v='+song['id']['videoId']
             youtube_dl.YoutubeDL(self.YDL_OPTS).download([url])
             return url
         except youtube_dl.utils.DownloadError:
             return False 
-
+    
+    def search(self, name, artists):
+        # can make cleaner
+        search_name = name + ' ' + ' '.join(artists) + ' audio'
+        request = self.youtube.search().list(
+            q = search_name,
+            part="id",
+            maxResults=1
+            )
+        response = request.execute()
+        if response['pageInfo']['totalResults'] <= 0:
+            return False
+        # getting the specific video id for each video in the playlist
+        song = response['items'][0]
+        print(song)
+        # downloading a specific youtube video
+        return 'https://www.youtube.com/watch?v='+song['id']['videoId']

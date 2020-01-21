@@ -25,18 +25,8 @@ def update_track(track, song_name, artists, processor, tracks):
         tracks.update_one({'_id': track_id}, {"$set": {"name": song_name}}) 
     if "artist" not in track:
         tracks.update_one({'_id': track_id}, {"$set": {"artists": artists}})   
-    if "spotify_download" not in track: 
-        # best way i could think of for determining where the track came from
-        spotify_download = 'https://www.youtube.com/watch?v=' not in track['preview_url']
-        print(song_name + " - from spotify: " + str(spotify_download))
-        tracks.update_one({'_id': track_id}, {"$set": {"spotify_download": spotify_download}})   
-    else: 
-        spotify_download = track['spotify_download']
     if "tempo" not in track or "mfcc" not in track or "chroma" not in track:
-        if spotify_download: 
-            spotify_downloader.download_preview(track['preview_url']) 
-        else:
-            youtube_downloader.download_song(track['preview_url'])
+        spotify_downloader.download_preview(track['preview_url']) 
         processor.load_track()
     else:
         return
@@ -80,7 +70,6 @@ with MongoClient("mongodb+srv://JustFlowAdmin:"+passwords['db_password']+"@justf
     tracks = db.tracks
     missing_tracks = db.missing_tracks
 
-    youtube_downloader = YoutubeDownloader()
     spotify_downloader = SpotifyDownloader()
     processor = Processor()
 
@@ -94,7 +83,7 @@ with MongoClient("mongodb+srv://JustFlowAdmin:"+passwords['db_password']+"@justf
             track_id = track['id']
             song_name = track['name']  
             artists = get_artists(track['artists'])           
-            if tracks.count_documents({'_id': track_id}) > 0:
+            if tracks.find_one({'_id': track_id}) is not None:
                 print("updating :" + track_id)
                 update_track(tracks.find_one({'_id': track_id}), song_name, artists, processor, tracks)        
             else: 
@@ -103,13 +92,10 @@ with MongoClient("mongodb+srv://JustFlowAdmin:"+passwords['db_password']+"@justf
                     preview_url = spotify_downloader.download_preview(track['preview_url']) 
                     spotify_download = True
                 else:
-                    preview_url = youtube_downloader.search(song_name, artists)
-                    if not preview_url:
+                    if missing_tracks.find_one({'_id': track_id}) is None:
                         print('missing track: ' + song_name + ' ' + track_id)
                         missing_tracks.insert_one(create_missing_track(track_id, song_name))
-                        continue
-                    youtube_downloader.download_song(preview_url)
-                    spotify_download = False            
+                    continue
                 processor.load_track()
                 new_track = create_track(processor, preview_url, spotify_download)
                 tracks.insert_one(new_track)

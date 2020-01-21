@@ -10,6 +10,7 @@ class YoutubeDownloader:
     YDL_OPTS = {
         'outtmpl': 'preview.mp3', 
         'format': 'bestaudio/best',
+        'noplaylist': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -32,17 +33,28 @@ class YoutubeDownloader:
     
     def search(self, name, artists):
         # can make cleaner
-        search_name = name + ' ' + ' '.join(artists) + ' audio'
+        search_name = name
+        for artist in artists:
+            if artist in name:
+                continue
+            search_name = search_name + " " + artist
+        
+        search_name = search_name + " audio"
+        print(search_name)
         request = self.youtube.search().list(
             q = search_name,
             part="id",
-            maxResults=1
+            maxResults=3
             )
+
         response = request.execute()
         if response['pageInfo']['totalResults'] <= 0:
             return False
-        # getting the specific video id for each video in the playlist
-        song = response['items'][0]
+        for v in response['items']:
+            if v['id']['kind'] == "youtube#video":
+                # getting the specific video id for each video in the playlist
+                song = v
+      
         print(song)
         # downloading a specific youtube video
         return 'https://www.youtube.com/watch?v='+song['id']['videoId']

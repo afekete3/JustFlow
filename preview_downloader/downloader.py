@@ -17,28 +17,28 @@ def delete_file(path):
 def get_artists(track_artists):
     artists = []
     for artist in track_artists:
-        artists.append(artist['name'])
+        artists.append(artist[constant.NAME_FIELD])
     return artists
 
 def update_track(track, song_name, artists, processor, tracks):
-    if "name" not in track:
-        tracks.update_one({'_id': track_id}, {"$set": {"name": song_name}}) 
-    if "artist" not in track:
-        tracks.update_one({'_id': track_id}, {"$set": {"artists": artists}})   
-    if "tempo" not in track or "mfcc" not in track or "chroma" not in track:
-        spotify_downloader.download_preview(track['preview_url']) 
+    if constant.NAME_FIELD not in track:
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.NAME_FIELD: song_name}}) 
+    if constant.ARTISTS_FIELD not in track:
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.ARTISTS_FIELD: artists}})   
+    if constant.TEMPO_FIELD not in track or constant.MFCC_FIELD not in track or constant.CHROMA_FIELD not in track:
+        spotify_downloader.download_preview(track[constant.PREVIEW_URL_FIELD]) 
         processor.load_track()
     else:
         return
-    if "tempo" not in track:
+    if constant.TEMPO_FIELD not in track:
         tempo = processor.get_tempo()
-        tracks.update_one({'_id': track_id}, {"$set": {"tempo": tempo}})                    
-    if "mfcc" not in track:
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.TEMPO_FIELD: tempo}})                    
+    if constant.MFCC_FIELD not in track:
         mfcc = processor.get_flattened_mfcc()
-        tracks.update_one({'_id': track_id}, {"$set": {"mfcc": mfcc.tolist()}})   
-    if "chroma" not in track:
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.MFCC_FIELD: mfcc.tolist()}})   
+    if constant.CHROMA_FIELD not in track:
         chroma = processor.get_chroma_features()
-        tracks.update_one({'_id': track_id}, {"$set": {"chroma": chroma.tolist()}})
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.CHROMA_FIELD: chroma.tolist()}})
     delete_file(constant.LOCAL_FILENAME)
 
 def create_track(processor, preview_url, spotify_download):             
@@ -46,20 +46,20 @@ def create_track(processor, preview_url, spotify_download):
     chroma = processor.get_chroma_features()
     tempo = processor.get_tempo()
     return  {
-        '_id' : track_id,
-        'preview_url' : preview_url,
-        'name' : song_name,
-        'artists' : artists, 
-        'mfcc' : mfcc.tolist(),
-        'chroma' : chroma.tolist(),
-        'tempo': tempo,
-        'spotify_download' : spotify_download
+        constant.ID_FIELD : track_id,
+        constant.PREVIEW_URL_FIELD : preview_url,
+        constant.NAME_FIELD : song_name,
+        constant.ARTISTS_FIELD : artists, 
+        constant.MFCC_FIELD : mfcc.tolist(),
+        constant.CHROMA_FIELD : chroma.tolist(),
+        constant.TEMPO_FIELD: tempo,
+        constant.SPOTIFY_DOWNLOAD_FIELD : spotify_download
     }
 
 def create_missing_track(track_id, song_name):
     return {
-        '_id' : track_id,
-        'name' : song_name
+        constant.ID_FIELD : track_id,
+        constant.NAME_FIELD : song_name
     }
 
 # start
@@ -81,19 +81,19 @@ with MongoClient("mongodb+srv://JustFlowAdmin:"+passwords['db_password']+"@justf
         for item in playlist['items']:
             track = item['track']       
             track_id = track['id']
-            song_name = track['name']  
-            artists = get_artists(track['artists'])           
-            if tracks.find_one({'_id': track_id}) is not None:
+            song_name = track[constant.NAME_FIELD]  
+            artists = get_artists(track[constant.ARTISTS_FIELD])           
+            if tracks.find_one({constant.ID_FIELD: track_id}) is not None:
                 print("updating :" + track_id)
-                update_track(tracks.find_one({'_id': track_id}), song_name, artists, processor, tracks)        
-            else: 
-                print("creating track: " + track_id)
-                if track['preview_url'] is not None:
-                    preview_url = spotify_downloader.download_preview(track['preview_url']) 
+                update_track(tracks.find_one({constant.ID_FIELD: track_id}), song_name, artists, processor, tracks)        
+            else:            
+                if track[constant.PREVIEW_URL_FIELD] is not None:
+                    print("creating track: " + track_id)
+                    preview_url = spotify_downloader.download_preview(track[constant.PREVIEW_URL_FIELD]) 
                     spotify_download = True
                 else:
-                    if missing_tracks.find_one({'_id': track_id}) is None:
-                        print('missing track: ' + song_name + ' ' + track_id)
+                    print('missing track: ' + song_name + ' ' + track_id)
+                    if missing_tracks.find_one({constant.ID_FIELD: track_id}) is None:                       
                         missing_tracks.insert_one(create_missing_track(track_id, song_name))
                     continue
                 processor.load_track()

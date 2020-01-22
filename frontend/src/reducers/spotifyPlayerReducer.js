@@ -11,6 +11,16 @@ export const spotifyPlayerReducer = (state = { }, action) => {
         ...state,
         currentPlayerState: action.currentPlayerState
       }
+
+    case "PLAY_SPECIFIC_TRACK_ERROR":
+      return{
+        ...state
+      }
+
+    case "PLAY_SPECIFIC_TRACK_SUCCESS":
+      return{
+        ...state
+      }
   
     default:
       return state;

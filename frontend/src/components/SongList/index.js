@@ -2,6 +2,7 @@ import SongList from "./component";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { fetchSongs } from '../../actions/songActions';
+import {playSpecificTrack} from '../../actions/spotifyPlayerActions';
 
 const mapStateToProps = (state) => {
 
@@ -11,12 +12,12 @@ const mapStateToProps = (state) => {
     fetchSongsError: state.songsReducer.fetchSongsError,
     fetchSongsPending: state.songsReducer.fetchSongsPending,
     fetchPlaylistSongsPending: state.songsReducer.fetchPlaylistSongsPending,
-    songPlaying: state.songsReducer.songPlaying,
-    songPaused: state.songsReducer.songPaused,
     songId: state.songsReducer.songId,
     songAddedId: state.userReducer.songId || '',
     viewType: state.songsReducer.viewType,
-    headerTitle: state.uiReducer.title
+    headerTitle: state.uiReducer.title,
+    playlists: state.playlistReducer.playlists,
+    currentPlayerState: state.spotifyPlayerReducer.currentPlayerState
   };
 
 };
@@ -25,6 +26,7 @@ const mapDispatchToProps = (dispatch) => {
 
   return bindActionCreators({
     fetchSongs,
+    playSpecificTrack
   }, dispatch);
 
 };

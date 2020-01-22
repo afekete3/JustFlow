@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { updateHeaderTitle } from '../../actions/uiActions';
 import { updateViewType } from '../../actions/songActions';
 import {reorderPlaylistTrack, fetchPlaylistSongs} from '../../actions/playlistActions';
+import {playSpecificTrack} from '../../actions/spotifyPlayerActions';
 
 const mapStateToProps = (state) => {
 
@@ -13,7 +14,8 @@ const mapStateToProps = (state) => {
     viewType: state.songsReducer.viewType,
     playlists: state.playlistReducer.playlists,
     token: state.tokenReducer.token,
-    songs: state.songsReducer.songs
+    songs: state.songsReducer.songs,
+    currentPlayerState: state.spotifyPlayerReducer.currentPlayerState
   };
 
 };
@@ -24,7 +26,8 @@ const mapDispatchToProps = (dispatch) => {
     updateHeaderTitle,
     updateViewType,
     reorderPlaylistTrack,
-    fetchPlaylistSongs
+    fetchPlaylistSongs,
+    playSpecificTrack
   }, dispatch);
 
 };

@@ -10,14 +10,41 @@ class SongList extends Component {
   constructor(props){
     super(props)
     this.state= {
-      selectedSong: null
+      selectedSong: null,
+      currentPlaylist: null
     }
   }
 
-  playSong = (song) =>{
-    (song.track.id === this.props.songId) && this.props.songPlaying && this.props.songPaused ? this.props.resumeSong() :
-            this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
-              this.props.audioControl(song);
+  playSong(song) {
+    if(this.props.headerTitle==='GeneratePlaylist'){
+      var track_uris = [song.track.uri];
+      this.props.playSpecificTrack(this.props.token, track_uris, undefined, undefined)
+    }
+    else{
+      console.log("playlist")
+      let tempPlaylist = this.props.playlists.filter(playlist => {
+        return playlist.name === this.props.headerTitle;
+      })[0];
+      if(this.state.currentPlaylist===null || this.state.currentPlaylist.name!==tempPlaylist.name){
+        this.setState({currentPlaylist: tempPlaylist}, ()=>{
+          console.log(this.state.currentPlaylist.uri)
+          var playlist_uri = this.state.currentPlaylist.uri;
+          var offset = song.track.uri;
+          this.props.playSpecificTrack(this.props.token, undefined, offset, playlist_uri)
+        })
+      }
+      else{
+          var playlist_uri = this.state.currentPlaylist.uri;
+          var offset = song.track.uri;
+          this.props.playSpecificTrack(this.props.token, undefined, offset, playlist_uri)
+      }
+      
+    }
+    console.log(song.track.uri)
+    
+    // (song.track.id === this.props.songId) && this.props.songPlaying && this.props.songPaused ? this.props.resumeSong() :
+    //         this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
+    //           this.props.audioControl(song);
   }
 
   generatePlaylist = () =>{
@@ -60,35 +87,34 @@ class SongList extends Component {
 
   renderSongs() {
     return this.props.songs.map((song, i) => {
-      const buttonClass = song.track.id === this.props.songId && !this.props.songPaused ? "fa-pause-circle-o" : "fa-play-circle-o";
+      const currentlyPlayingClass = this.props.currentPlayerState!==undefined && song.track.id === this.props.currentPlayerState.track_window.current_track.id ? "fa-pause-circle-o greenText" : "fa-play-circle-o";
 
       return (
         <li onClick={()=>{
           this.setState({selectedSong: song})
-        }} className={song.track.id === this.props.songId ? 'active user-song-item' : 'user-song-item'} key={ i }>
+        }} className={song.track.id === this.props.songId ? `active user-song-item greenText ${currentlyPlayingClass}` : `user-song-item`} key={ i }>
           <div onClick={() => {this.playSong(song) } } className='play-song'>
-            <i className={`fa ${buttonClass} play-btn`} aria-hidden="true"/>
             <Icon circular name='play' inverted color='grey'  link/>
           </div>
 
           <div className='song-title'>
-            <p>{ song.track.name }</p>
+            <p className={`${currentlyPlayingClass}`}>{ song.track.name }</p>
           </div>
 
           <div className='song-artist'>
-            <p>{ song.track.artists[0].name }</p>
+            <p className={`${currentlyPlayingClass}`}>{ song.track.artists[0].name }</p>
           </div>
 
           <div className='song-album'>
-            <p>{ song.track.album.name }</p>
+            <p className={`${currentlyPlayingClass}`}>{ song.track.album.name }</p>
           </div>
 
           <div className='song-added'>
-            <p>{ moment(song.added_at).format('YYYY-MM-DD')}</p>
+            <p className={`${currentlyPlayingClass}`}>{ moment(song.added_at).format('YYYY-MM-DD')}</p>
           </div>
 
           <div className='song-length'>
-            <p>{ this.msToMinutesAndSeconds(song.track.duration_ms) }</p>
+            <p className={`${currentlyPlayingClass}`}>{ this.msToMinutesAndSeconds(song.track.duration_ms) }</p>
           </div>
         </li>
       );
@@ -151,13 +177,11 @@ SongList.propTypes = {
   fetchSongsPending: PropTypes.bool,
   fetchPlaylistSongsPending: PropTypes.bool,
   fetchSongs: PropTypes.func,
-  audioControl: PropTypes.func,
-  songPaused: PropTypes.bool,
-  songPlaying: PropTypes.bool,
-  resumeSong: PropTypes.func,
-  pauseSong: PropTypes.func,
   addSongToLibrary: PropTypes.func,
-  headerTitle: PropTypes.string
+  headerTitle: PropTypes.string,
+  playSpecificTrack: PropTypes.func,
+  playlists: PropTypes.array,
+  currentPlayerState: PropTypes.object
 };
 
 export default SongList;

@@ -8,27 +8,21 @@ class GeneratePlaylistHeader extends Component{
 
   constructor(props){
     super(props);
-    this.generatePlaylistClick = this.generatePlaylistClick.bind(this)
-	}
+    this.generatePlaylistClick = this.generatePlaylistClick.bind(this); 
+    this.addSongsToPlaylist = this.addSongsToPlaylist.bind(this); 
+  }
 
   generatePlaylistClick(){
-    this.generatePlaylist(); 
-    // promise.then(res=>{
-    //   this.createGeneratedPlaylist(res); 
-    // })
+    this.generatePlaylist();
   }
 
-  createGeneratedPlaylist(generatedPlaylist){
-    console.log(generatedPlaylist)
-  }
-
+  
   generatePlaylist(){
     var seedSongIds = [];
     
     for(let seed of this.props.selectedSongs){
       seedSongIds.push(seed.track.id);      
     }
-    console.log(seedSongIds[0])
     fetch("http://localhost:8080/playlist/generate", {
       method: "POST",
       headers: {
@@ -42,11 +36,62 @@ class GeneratePlaylistHeader extends Component{
 		  }),
 		}).then(res => {
       res.json().then(parsed=>{
-        console.log("Parsed",parsed.generated_ordered_ids)
-        this.createGeneratedPlaylist(parsed.generated_ordered_ids);
-        // return parsed.ordered_ids; 
+        this.createGeneratedPlaylist(parsed.generated_playlist_ids);
       })
     });
+  }
+
+  createGeneratedPlaylist(trackIds){
+    const request = new Request(`https://api.spotify.com/v1/users/${this.props.userId}/playlists`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.props.token,
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify({
+        'name' : this.state.name, 
+        'description' : this.state.desc
+      })
+    })
+    fetch(request)
+    .then((res) =>{
+      return res.json()
+    })
+    .then((data)=>{
+      this.addSongsToPlaylist(trackIds, data['id'])
+    })
+  }
+
+  addSongsToPlaylist(trackIds, playlistId){
+    let uris = ''
+
+    for(let i = 0; i < trackIds.length; i++){
+      if(i === trackIds.length - 1){
+        uris += `spotify:track:${trackIds[i]}`
+      }
+      else{
+        uris += `spotify:track:${trackIds[i]},`
+      }
+    }
+    console.log(uris)
+    const request = new Request(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${uris}`, {
+      method: "POST",
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.props.token,
+        "Content-Type": "application/json",
+      })
+    })
+    fetch(request)
+    .then(res =>{
+      return res.json(); 
+    })
+    .then(data=>{
+      this.props.fetchPlaylistsMenu(this.props.userId, this.props.token);
+      this.props.updateHeaderTitle('Home');
+      // this.props.updateViewType('Home'); 
+      // this.props.fetchPlaylistSongs(this.props.userId, playlistId, this.props.token);
+      // this.props.updateHeaderTitle(this.state.name); 
+    })
   }
 
   selectSong(){
@@ -114,6 +159,10 @@ GeneratePlaylistHeader.propTypes = {
   selectedSongs : PropTypes.array, 
   token : PropTypes.string, 
   userId : PropTypes.string, 
+  updateHeaderTitle : PropTypes.func,
+  updateViewType : PropTypes.func, 
+  fetchPlaylistSongs : PropTypes.func, 
+  fetchPlaylistsMenu: PropTypes.func, 
 };
 
 export default GeneratePlaylistHeader;

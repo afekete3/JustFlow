@@ -69,7 +69,6 @@ def get_by_id(track_id, access_token):
         print(err)
         print('in get_by_id method')
         return add_new_track(track_id, access_token)
-    return track
 
 def get_all():
     all_tracks = Track.objects

@@ -1,87 +1,107 @@
 import requests
 import sys
-import processor
 import os
-import json
 from pathlib import Path
 from pymongo import MongoClient
-import spotipy
-import spotipy.util as util
-import spotipy.oauth2 as oauth2
-
-
-def download_preview(url, name):
-    # Creates the file in the working directory
-    local_filename = name + '.mp3'
-    spotify_preview = requests.get(url)   
-    downloaded_preview = open(local_filename, 'wb')
-    for chunk in spotify_preview.iter_content(chunk_size=512 * 1024): 
-        if chunk: # filter out keep-alive new chunks
-            downloaded_preview.write(chunk)
-    downloaded_preview.close()
-    return local_filename
-
-def get_bytes_from_file(filename):
-    output = []
-    with open(filename,'rb') as f:
-        output = f.read()  
-    return output 
+import librosa
+import json
+from scipy.spatial import distance
+from youtube_downloader import YoutubeDownloader
+from spotify_downloader import SpotifyDownloader
+from processor import Processor
+import constant
 
 def delete_file(path):
     os.remove(path)
 
+def get_artists(track_artists):
+    artists = []
+    for artist in track_artists:
+        artists.append(artist[constant.NAME_FIELD])
+    return artists
+
+def update_track(track, song_name, artists, processor, tracks):
+    if constant.NAME_FIELD not in track:
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.NAME_FIELD: song_name}}) 
+    if constant.ARTISTS_FIELD not in track:
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.ARTISTS_FIELD: artists}})   
+    if constant.TEMPO_FIELD not in track or constant.MFCC_FIELD not in track or constant.CHROMA_FIELD not in track:
+        spotify_downloader.download_preview(track[constant.PREVIEW_URL_FIELD]) 
+        processor.load_track()
+    else:
+        return
+    if constant.TEMPO_FIELD not in track:
+        tempo = processor.get_tempo()
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.TEMPO_FIELD: tempo}})                    
+    if constant.MFCC_FIELD not in track:
+        mfcc = processor.get_flattened_mfcc()
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.MFCC_FIELD: mfcc.tolist()}})   
+    if constant.CHROMA_FIELD not in track:
+        chroma = processor.get_chroma_features()
+        tracks.update_one({constant.ID_FIELD: track_id}, {"$set": {constant.CHROMA_FIELD: chroma.tolist()}})
+    delete_file(constant.LOCAL_FILENAME)
+
+def create_track(processor, preview_url, spotify_download):             
+    mfcc = processor.get_flattened_mfcc()
+    chroma = processor.get_chroma_features()
+    tempo = processor.get_tempo()
+    return  {
+        constant.ID_FIELD : track_id,
+        constant.PREVIEW_URL_FIELD : preview_url,
+        constant.NAME_FIELD : song_name,
+        constant.ARTISTS_FIELD : artists, 
+        constant.MFCC_FIELD : mfcc.tolist(),
+        constant.CHROMA_FIELD : chroma.tolist(),
+        constant.TEMPO_FIELD: tempo,
+        constant.SPOTIFY_DOWNLOAD_FIELD : spotify_download
+    }
+
+def create_missing_track(track_id, song_name):
+    return {
+        constant.ID_FIELD : track_id,
+        constant.NAME_FIELD : song_name
+    }
 
 # start
-
-client = MongoClient("mongodb+srv://JustFlowAdmin:capstone123!@justflow-l8dim.mongodb.net/test?retryWrites=true&w=majority")
-db = client.get_database('JustFlow')
-
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)
-CLIENT_ID = "e82e0eb0f4a846239ea74e71b554d459"
-CLIENT_SECRET = passwords['CLIENT_SECRET']
+with MongoClient("mongodb+srv://JustFlowAdmin:"+passwords['db_password']+"@justflow-l8dim.mongodb.net/JustFlow?retryWrites=true&w=majority") as client:
+    db = client.get_database('JustFlow')
+    tracks = db.tracks
+    missing_tracks = db.missing_tracks
 
-auth = oauth2.SpotifyClientCredentials(
-    client_id=CLIENT_ID,
-    client_secret=CLIENT_SECRET
-)
+    spotify_downloader = SpotifyDownloader()
+    processor = Processor()
 
-token = auth.get_access_token()
-playlist_url = 'https://api.spotify.com/v1/playlists/37i9dQZF1DXarRysLJmuju/tracks'
-response = requests.get(playlist_url, headers={'Authorization': 'Bearer ' + token}) 
-playlist = json.loads(response.content)
-tracks = db.tracks
+    with open('playlists.json', 'r') as file: 
+        playlists = json.load(file)
 
-for item in playlist['items']:
-    track = item['track']
-    track_id = track['id']
-    if tracks.find({'_id': track_id}) != 'null':
-        break
-    if track['preview_url'] is None:
-        print(track['name'])
-        continue
-    song_name = track['name']
-    
-    preview_url = track['preview_url']
-    path = download_preview(preview_url, song_name)
-    mfcc = processor.get_flattened_mfcc(file = path)
-    chroma = processor.get_chroma_features(file = path)
+    for playlist_id in playlists['playlists']:
+        playlist = spotify_downloader.get_playlist(playlist_id)
+        for item in playlist['items']:
+            track = item['track']       
+            track_id = track['id']
+            song_name = track[constant.NAME_FIELD]  
+            artists = get_artists(track[constant.ARTISTS_FIELD])           
+            if tracks.find_one({constant.ID_FIELD: track_id}) is not None:
+                print("updating :" + track_id)
+                update_track(tracks.find_one({constant.ID_FIELD: track_id}), song_name, artists, processor, tracks)        
+            else:            
+                if track[constant.PREVIEW_URL_FIELD] is not None:
+                    print("creating track: " + track_id)
+                    preview_url = spotify_downloader.download_preview(track[constant.PREVIEW_URL_FIELD]) 
+                    spotify_download = True
+                else:
+                    print('missing track: ' + song_name + ' ' + track_id)
+                    if missing_tracks.find_one({constant.ID_FIELD: track_id}) is None:                       
+                        missing_tracks.insert_one(create_missing_track(track_id, song_name))
+                    continue
+                processor.load_track()
+                new_track = create_track(processor, preview_url, spotify_download)
+                tracks.insert_one(new_track)
+                delete_file(constant.LOCAL_FILENAME)
 
-    # storing a byte array of the mp3 file. 
-    track_bytes = get_bytes_from_file(path)
-    print(track_id)
 
-    new_track = {
-        '_id' : track_id,
-        'preview_url' : preview_url,
-        'name' : song_name,
-        'mfcc' : mfcc.tolist(),
-        'chroma' : chroma.tolist(),
-        'preview' : track_bytes
-    }
-    tracks.insert_one(new_track)
-    delete_file(path)
-    break
 
 
 

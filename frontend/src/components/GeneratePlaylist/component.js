@@ -1,48 +1,40 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import SongList from '../SongList';
-import './GeneratePlaylist.css'
+import './GeneratePlaylist.css';
+import TrackSearch from '../TrackSearch';
 
 
 class GeneratePlaylist extends Component{
 
-    renderSongs(){
+    componentWillUnmount(){
+        // clear the selected songs 
+        this.props.setSelectedSongs([])
+    }
 
-        return this.props.songs.map((song, i) => {
-            console.log(song);
+    generatePlaylist() {
 
-            return(
-                <div>
-
-                </div>
-            );
-            
-        });
-        
     }
 
     render(){
         
         return(
             <div>
-                {/* <ul>
-                    {this.renderSongs()}
-                </ul> */}
-                <SongList checkBoxVisible={true}/>
+                <TrackSearch />
+                {this.props.songs.length != 0 && <SongList checkBoxVisible={true}/>}
             </div>
         );
     };
+
 };
 
 GeneratePlaylist.propTypes={
-    songId: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-      ]),
       songs: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.array
       ]),
+      selectedSongs : PropTypes.array, 
+      setSelectedSongs : PropTypes.func, 
 };
 
 export default GeneratePlaylist;

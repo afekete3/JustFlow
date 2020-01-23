@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TrackSearch from '../TrackSearch';
+import GeneratePlaylistHeader from '../GeneratePlaylistHeader'; 
 import './MainHeader.css';
 
 
@@ -95,7 +95,7 @@ class MainHeader extends Component{
       let tempPlaylist = this.props.playlists.filter(playlist => {
         return playlist.name === this.props.headerTitle;
       })[0];
-      if(this.state.currentPlaylist===null || this.state.currentPlaylist.name!==tempPlaylist.name){
+      if(tempPlaylist !== undefined && (this.state.currentPlaylist===null || this.state.currentPlaylist.name!==tempPlaylist.name)){
         this.setState({currentPlaylist: tempPlaylist})
       }
       
@@ -113,8 +113,7 @@ class MainHeader extends Component{
 
         { this.props.headerTitle === 'GeneratePlaylist' &&(
           <div>
-            <h3>Generate Playlist</h3>
-            <TrackSearch />
+            <GeneratePlaylistHeader/>
           </div>
         )}
         {this.props.viewType === 'playlist' && this.state.currentPlaylist!==null && (
@@ -152,7 +151,6 @@ MainHeader.propTypes = {
   headerTitle: PropTypes.string,
   viewType: PropTypes.string,
   playlists: PropTypes.array,
-  playlistMenu: PropTypes.array,
   token: PropTypes.string,
   songs: PropTypes.array,
   reorderPlaylistTrack: PropTypes.func,

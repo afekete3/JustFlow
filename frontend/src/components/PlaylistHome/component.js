@@ -14,8 +14,8 @@ class PlaylistHome extends Component{
       }
 
     renderPlaylists() {
-      if(this.props.playlistMenu!==''){
-        return this.props.playlistMenu.map(playlist => {
+      if(this.props.playlists!==''){
+        return this.props.playlists.map(playlist => {
           const getPlaylistSongs = () => {
             this.props.fetchPlaylistSongs(playlist.owner.id, playlist.id, this.props.token);
             this.props.updateHeaderTitle(playlist.name);
@@ -53,7 +53,7 @@ PlaylistHome.propTypes = {
     userId: PropTypes.string,
     token: PropTypes.string,
     title: PropTypes.string,
-    playlistMenu:  PropTypes.oneOfType([
+    playlists:  PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.array
     ]),

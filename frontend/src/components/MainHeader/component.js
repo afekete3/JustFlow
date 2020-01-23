@@ -86,7 +86,7 @@ class MainHeader extends Component{
       let tempPlaylist = this.props.playlists.filter(playlist => {
         return playlist.name === this.props.headerTitle;
       })[0];
-      if(this.state.currentPlaylist===null || this.state.currentPlaylist.name!==tempPlaylist.name){
+      if(tempPlaylist !== undefined && (this.state.currentPlaylist===null || this.state.currentPlaylist.name!==tempPlaylist.name)){
         this.setState({currentPlaylist: tempPlaylist})
       }
       
@@ -141,7 +141,6 @@ MainHeader.propTypes = {
   headerTitle: PropTypes.string,
   viewType: PropTypes.string,
   playlists: PropTypes.array,
-  playlistMenu: PropTypes.array,
   token: PropTypes.string,
   songs: PropTypes.array,
   reorderPlaylistTrack: PropTypes.func,

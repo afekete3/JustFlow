@@ -11,7 +11,7 @@ class UserPlaylists extends Component {
   }
 
   renderPlaylists() {
-    return this.props.playlistMenu.map(playlist => {
+    return this.props.playlists.map(playlist => {
       const getPlaylistSongs = () => {
         this.props.fetchPlaylistSongs(playlist.owner.id, playlist.id, this.props.token);
         this.props.updateHeaderTitle(playlist.name);
@@ -31,7 +31,7 @@ class UserPlaylists extends Component {
       <div className='user-playlist-container'>
         <h3 className='user-playlist-header'>Playlists</h3>
         {
-          this.props.playlistMenu && this.renderPlaylists()
+          this.props.playlists && this.renderPlaylists()
         }
       </div>
     );
@@ -42,7 +42,7 @@ UserPlaylists.propTypes = {
   userId: PropTypes.string,
   token: PropTypes.string,
   title: PropTypes.string,
-  playlistMenu:  PropTypes.oneOfType([
+  playlists:  PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array
   ]),

@@ -49,8 +49,7 @@ class GeneratePlaylistHeader extends Component{
         "Content-Type": "application/json",
       }),
       body: JSON.stringify({
-        'name' : this.state.name, 
-        'description' : this.state.desc
+        'name' : this.state.name
       })
     })
     fetch(request)
@@ -86,12 +85,29 @@ class GeneratePlaylistHeader extends Component{
       return res.json(); 
     })
     .then(data=>{
-      this.props.fetchPlaylistsMenu(this.props.userId, this.props.token);
-      this.props.updateHeaderTitle('Home');
-      // this.props.updateViewType('Home'); 
-      // this.props.fetchPlaylistSongs(this.props.userId, playlistId, this.props.token);
-      // this.props.updateHeaderTitle(this.state.name); 
+      console.log(data)
+      this.addPlaylist(playlistId);
+    });
+  }
+
+  addPlaylist(playlistId){
+    const request = new Request(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+      method: "GET",
+      headers: new Headers({
+        'Authorization': 'Bearer ' + this.props.token,
+        "Content-Type": "application/json",
+      })
     })
+    fetch(request)
+    .then(res =>{
+      return res.json(); 
+    })
+    .then(data=>{
+      console.log(data)
+      this.props.addPlaylistItem(data)
+      this.props.fetchPlaylistSongs(this.props.userId, playlistId, this.props.token);
+      this.props.updateHeaderTitle(this.state.name); 
+    });
   }
 
   selectSong(){
@@ -136,12 +152,6 @@ class GeneratePlaylistHeader extends Component{
               onChange={e=> this.setState({'size' : e.target.value})} 
             /> 
           </Form.Group>
-          <Form.Field
-            control={TextArea}
-            label='Description'
-            placeholder='Describe the playlist...'
-            onChange={e=> this.setState({'desc' : e.target.value})}
-          />
           {this.props.selectedSongs.length > 0 && (
             <div>
               <label>Seed Songs</label>
@@ -163,6 +173,7 @@ GeneratePlaylistHeader.propTypes = {
   updateViewType : PropTypes.func, 
   fetchPlaylistSongs : PropTypes.func, 
   fetchPlaylistsMenu: PropTypes.func, 
+  addPlaylistItem : PropTypes.func, 
 };
 
 export default GeneratePlaylistHeader;

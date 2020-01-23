@@ -1,3 +1,11 @@
+const defaultState = {
+  playlists: [],
+  fetchPlaylistError: false,
+  fetchPlaylistPending: false,
+  reorderPlaylistTrackPending: false, 
+  reorderPlaylistTrackError : false, 
+};
+
 export const playlistReducer = (state = {}, action) => {
   switch (action.type) {
 
@@ -9,11 +17,10 @@ export const playlistReducer = (state = {}, action) => {
 
   case "FETCH_PLAYLIST_MENU_SUCCESS":
     return {
-      playlistMenu: action.playlists,
       playlists: action.playlists,
       fetchPlaylistError: false,
       fetchPlaylistPending: false,
-      ...state
+      ...state, 
     };
 
   case "ADD_PLAYLIST_ITEM":

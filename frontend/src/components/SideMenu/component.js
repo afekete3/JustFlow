@@ -25,13 +25,14 @@ const SideMenu = ({
   return (
     <ul className='side-menu-container'>
 
-      <li className='side-menu-item'>
+      <li className='side-menu-item' onClick={handleHomeClick}>
         <Icon name='home'/>
-        <h3 className='side-menu-title' onClick={handleHomeClick}>Home</h3>
+        <h3 className='side-menu-title'>Home</h3>
       </li>
 
-      <li className='side-menu-item'>
-        <button onClick={handleGenerateClick} className='new-playlist-btn'>Generate Playlist</button>
+      <li className='side-menu-item' onClick={handleGenerateClick}>
+        <Icon name='random'/>
+        <h3 className='side-menu-title'>Generate Playlist</h3>
       </li>
     </ul>
   );

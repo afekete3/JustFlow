@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { searchSongs, updateViewType } from '../../actions/songActions';
 import {updateHeaderTitle} from '../../actions/uiActions';
-import { fetchPlaylistSongs, fetchPlaylistsMenu } from '../../actions/playlistActions';
+import { fetchPlaylistSongs, fetchPlaylistsMenu, addPlaylistItem } from '../../actions/playlistActions';
 
 const mapStateToProps = (state) => {
 
@@ -23,6 +23,7 @@ const mapDispatchToProps = (dispatch) => {
     updateViewType, 
     fetchPlaylistSongs, 
     fetchPlaylistsMenu, 
+    addPlaylistItem
   }, dispatch);
 
 };

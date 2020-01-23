@@ -6,6 +6,7 @@ import songsReducer from './songsReducer';
 import uiReducer from './uiReducer';
 import soundReducer from './soundReducer';
 import spotifyPlayerReducer from './spotifyPlayerReducer';
+import playlistOrganizeReducer from './playlistOrganizeReducer';
 
 export default combineReducers({
   userReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   songsReducer,
   uiReducer,
   soundReducer,
-  spotifyPlayerReducer
+  spotifyPlayerReducer,
+  playlistOrganizeReducer
 });

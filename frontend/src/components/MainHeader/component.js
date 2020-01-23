@@ -48,11 +48,13 @@ class MainHeader extends Component{
 
       // this.props.reorderPlaylistTrack(this.state.currentPlaylist.id, this.props.token, index, i);
     }
+    this.props.updateOrganizingState(false);
     console.log("ORDERED!!!!")
   }
 
 
   organizePlaylist=() =>{
+    this.props.updateOrganizingState(true);
     console.log("current playlist", this.state.currentPlaylist)
 
     var unordered_ids = [];
@@ -157,7 +159,8 @@ MainHeader.propTypes = {
   songs: PropTypes.array,
   reorderPlaylistTrack: PropTypes.func,
   fetchPlaylistSongs: PropTypes.func,
-  currentPlayerState: PropTypes.object
+  currentPlayerState: PropTypes.object,
+  updateOrganizingState: PropTypes.func
 };
 
 export default MainHeader;

@@ -17,7 +17,8 @@ const mapStateToProps = (state) => {
     viewType: state.songsReducer.viewType,
     headerTitle: state.uiReducer.title,
     playlists: state.playlistReducer.playlists,
-    currentPlayerState: state.spotifyPlayerReducer.currentPlayerState
+    currentPlayerState: state.spotifyPlayerReducer.currentPlayerState,
+    isOrganizing: state.playlistOrganizeReducer.isOrganizing
   };
 
 };

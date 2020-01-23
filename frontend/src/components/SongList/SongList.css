@@ -151,6 +151,8 @@
   border-bottom: 1px solid #666;
   padding-bottom: 6px;
   margin-top: 20px;
+  margin-left: 1.3rem;
+  margin-right: 1.3rem;
 }
 
 .add-song {
@@ -194,4 +196,10 @@
 
 .greenText{
   color: #1db954;
+}
+
+.ui.segment{
+  padding: 0rem 1.3rem;
+  margin: 0rem;
+  background-color: rgb(24, 24, 24);
 }

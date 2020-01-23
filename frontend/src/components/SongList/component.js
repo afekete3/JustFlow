@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import './SongList.css';
-
-import {Icon} from 'semantic-ui-react';
+import FlipMove from 'react-flip-move'
+import {Icon, Segment, Dimmer, Loader} from 'semantic-ui-react';
 
 class SongList extends Component {
 
@@ -11,7 +11,8 @@ class SongList extends Component {
     super(props)
     this.state= {
       selectedSong: null,
-      currentPlaylist: null
+      currentPlaylist: null,
+      currentSongs: []
     }
   }
 
@@ -40,18 +41,8 @@ class SongList extends Component {
       }
       
     }
-    console.log(song.track.uri)
-    
-    // (song.track.id === this.props.songId) && this.props.songPlaying && this.props.songPaused ? this.props.resumeSong() :
-    //         this.props.songPlaying && !this.props.songPaused && (song.track.id === this.props.songId)  ? this.props.pauseSong() :
-    //           this.props.audioControl(song);
-  }
-
-  generatePlaylist = () =>{
 
   }
-
-
 
   selectSong(){
     console.log(this.state.selectedSong)
@@ -86,39 +77,54 @@ class SongList extends Component {
   }
 
   renderSongs() {
-    return this.props.songs.map((song, i) => {
-      const currentlyPlayingClass = this.props.currentPlayerState!==undefined && song.track.id === this.props.currentPlayerState.track_window.current_track.id ? "fa-pause-circle-o greenText" : "fa-play-circle-o";
+    if(this.state.currentSongs!==this.props.songs){
+      this.setState({currentSongs: this.props.songs})
+    }
+    return (
+      <Segment >
+            <Dimmer active={this.props.isOrganizing!==undefined ? this.props.isOrganizing : false}>
+              <Loader content='Organizing...' />
+            </Dimmer>
+         <FlipMove duration={600}>{
+                
+            this.state.currentSongs.map((song, i) => {
+              const currentlyPlayingClass = this.props.currentPlayerState!==undefined && song.track.id === this.props.currentPlayerState.track_window.current_track.id ? "fa-pause-circle-o greenText" : "fa-play-circle-o";
 
-      return (
-        <li onClick={()=>{
-          this.setState({selectedSong: song})
-        }} className={song.track.id === this.props.songId ? `active user-song-item greenText ${currentlyPlayingClass}` : `user-song-item`} key={ i }>
-          <div onClick={() => {this.playSong(song) } } className='play-song'>
-            <Icon circular name='play' inverted color='grey'  link/>
-          </div>
+              return (
+                <li onClick={()=>{
+                  this.setState({selectedSong: song})
+                }} className={song.track.id === this.props.songId ? `active user-song-item greenText ${currentlyPlayingClass}` : `user-song-item`} key={ song.track.id }>
+                  <div onClick={() => {this.playSong(song) } } className='play-song'>
+                    <Icon circular name='play' inverted color='grey'  link/>
+                  </div>
 
-          <div className='song-title'>
-            <p className={`${currentlyPlayingClass}`}>{ song.track.name }</p>
-          </div>
+                  <div className='song-title'>
+                    <p className={`${currentlyPlayingClass}`}>{ song.track.name }</p>
+                  </div>
 
-          <div className='song-artist'>
-            <p className={`${currentlyPlayingClass}`}>{ song.track.artists[0].name }</p>
-          </div>
+                  <div className='song-artist'>
+                    <p className={`${currentlyPlayingClass}`}>{ song.track.artists[0].name }</p>
+                  </div>
 
-          <div className='song-album'>
-            <p className={`${currentlyPlayingClass}`}>{ song.track.album.name }</p>
-          </div>
+                  <div className='song-album'>
+                    <p className={`${currentlyPlayingClass}`}>{ song.track.album.name }</p>
+                  </div>
 
-          <div className='song-added'>
-            <p className={`${currentlyPlayingClass}`}>{ moment(song.added_at).format('YYYY-MM-DD')}</p>
-          </div>
+                  <div className='song-added'>
+                    <p className={`${currentlyPlayingClass}`}>{ moment(song.added_at).format('YYYY-MM-DD')}</p>
+                  </div>
 
-          <div className='song-length'>
-            <p className={`${currentlyPlayingClass}`}>{ this.msToMinutesAndSeconds(song.track.duration_ms) }</p>
-          </div>
-        </li>
-      );
-    });
+                  <div className='song-length'>
+                    <p className={`${currentlyPlayingClass}`}>{ this.msToMinutesAndSeconds(song.track.duration_ms) }</p>
+                  </div>
+                </li>
+              );
+            })
+            }
+            </FlipMove>
+   </Segment>
+      
+    )
   }
 
   render() {
@@ -132,29 +138,33 @@ class SongList extends Component {
             {this.selectSong()}
           </div>
         )}
-        <div className='song-header-container'>
-          <div className='song-title-header'>
-            <p>Title</p>
-          </div>
-          <div className='song-artist-header'>
-            <p>Artist</p>
-          </div>
-          <div className='song-album-header'>
-            <p>Album</p>
-          </div>
-          <div className='song-added-header'>
-            <i className="fa fa-calendar-plus-o" aria-hidden="true"/>
-          </div>
-          <div className='song-length-header'>
-            <p><i className="fa fa-clock-o" aria-hidden="true" /></p>
-          </div>
-          <div className='song-length-header'>
-            <p><i className="fa fa-clock-o" aria-hidden="true" /></p>
-          </div>
+        <div>
+            <div className='song-header-container'>
+              <div className='song-title-header'>
+                <p>Title</p>
+              </div>
+              <div className='song-artist-header'>
+                <p>Artist</p>
+              </div>
+              <div className='song-album-header'>
+                <p>Album</p>
+              </div>
+              <div className='song-added-header'>
+                <i className="fa fa-calendar-plus-o" aria-hidden="true"/>
+              </div>
+              <div className='song-length-header'>
+                <p><i className="fa fa-clock-o" aria-hidden="true" /></p>
+              </div>
+              <div className='song-length-header'>
+                <p><i className="fa fa-clock-o" aria-hidden="true" /></p>
+              </div>
+            </div>
+              {
+                this.props.songs && !this.props.fetchPlaylistSongsPending && this.renderSongs()
+              }
         </div>
-        {
-          this.props.songs && !this.props.fetchPlaylistSongsPending && this.renderSongs()
-        }
+        
+        
 
       </div>
     );
@@ -181,7 +191,8 @@ SongList.propTypes = {
   headerTitle: PropTypes.string,
   playSpecificTrack: PropTypes.func,
   playlists: PropTypes.array,
-  currentPlayerState: PropTypes.object
+  currentPlayerState: PropTypes.object,
+  isOrganizing: PropTypes.bool
 };
 
 export default SongList;

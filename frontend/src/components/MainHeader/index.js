@@ -5,6 +5,7 @@ import { updateHeaderTitle } from '../../actions/uiActions';
 import { updateViewType } from '../../actions/songActions';
 import {reorderPlaylistTrack, fetchPlaylistSongs} from '../../actions/playlistActions';
 import {playSpecificTrack} from '../../actions/spotifyPlayerActions';
+import {updateOrganizingState} from '../../actions/playlistOrganizeActions';
 
 const mapStateToProps = (state) => {
 
@@ -27,7 +28,8 @@ const mapDispatchToProps = (dispatch) => {
     updateViewType,
     reorderPlaylistTrack,
     fetchPlaylistSongs,
-    playSpecificTrack
+    playSpecificTrack,
+    updateOrganizingState
   }, dispatch);
 
 };

@@ -48,6 +48,7 @@ class MainHeader extends Component{
 
       // this.props.reorderPlaylistTrack(this.state.currentPlaylist.id, this.props.token, index, i);
     }
+    console.log("ORDERED!!!!")
   }
 
 
@@ -77,6 +78,14 @@ class MainHeader extends Component{
       })
       //return res.json();
     });
+  }
+
+  startPlaylist=()=>{
+    if(this.props.currentPlayerState!==undefined && this.state.currentPlaylist!==null){
+      console.log("currentPlaylist", this.state.currentPlaylist)
+      var playlist_uri = this.state.currentPlaylist.uri;
+      this.props.playSpecificTrack(this.props.token, undefined, undefined, playlist_uri)
+    }
   }
 
   render(){
@@ -117,9 +126,10 @@ class MainHeader extends Component{
               <h3 className='header-title'>{this.props.headerTitle}</h3>
               <p className='created-by'>Created By: <span className='lighter-text'>{this.state.currentPlaylist.owner.display_name}</span> - {this.state.currentPlaylist.tracks.total} songs</p>
               <button
-                onClick={!this.props.songPaused ? this.props.pauseSong : this.props.resumeSong}
+                onClick={this.startPlaylist}
                 className='main-pause-play-btn'>
-                {this.props.songPaused ? 'PLAY' : 'PAUSE'}
+                {/* {this.props.songPaused ? 'PLAY' : 'PAUSE'} */}
+                PLAY
               </button>
               <button onClick={this.organizePlaylist} className='organize-btn'>ORGANIZE</button>
 
@@ -144,7 +154,8 @@ MainHeader.propTypes = {
   token: PropTypes.string,
   songs: PropTypes.array,
   reorderPlaylistTrack: PropTypes.func,
-  fetchPlaylistSongs: PropTypes.func
+  fetchPlaylistSongs: PropTypes.func,
+  currentPlayerState: PropTypes.object
 };
 
 export default MainHeader;

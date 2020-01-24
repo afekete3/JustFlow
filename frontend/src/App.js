@@ -43,17 +43,11 @@ class App extends Component {
 			window.location = 'http://localhost:8080/';
 			this.setState({authenticated: true})
 		}
-		
-		else{
-			if(this.state.firstAuth !== false){
-				let parsed = queryString.parse(window.location.search)
-				let accessToken = parsed['access_token']
-				this.props.setToken(accessToken)
-				
-				this.setState({accessToken: accessToken, firstAuth: false})
-				this.playerCheckInterval = setInterval(() => this.checkForPlayer(), 1000);
-			}
-			
+		else if(this.state.firstAuth !== false){
+			let accessToken = parsed['access_token']
+			this.props.setToken(accessToken)
+			this.setState({accessToken: accessToken, firstAuth: false})
+			this.playerCheckInterval = setInterval(() => this.checkForPlayer(), 1000);
 		}
 		this.props.updateHeaderTitle('Home')
 	}
@@ -251,7 +245,7 @@ const mapStateToProps = (state) => {
     token: state.tokenReducer.token,
 	volume: state.soundReducer.volume,
 	spotifyPlayer: state.spotifyPlayerReducer.spotifyPlayer,
-	currentPlayerState: PropTypes.object
+	currentPlayerState: PropTypes.object, 
   };
 
 };
@@ -260,7 +254,7 @@ const mapDispatchToProps = dispatch => {
 
   return bindActionCreators({
     fetchUser,
-    setToken,
+	setToken,
     playSong,
     stopSong,
     pauseSong,

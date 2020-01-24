@@ -5,15 +5,13 @@ from documents import track
 from flask import Flask, request, redirect, g, render_template
 from urllib.parse import quote
 from routes.auth import auth
-from flask_cors import CORS
-
-
 from routes.organize import organize
 from routes.generate import generate
 from flask_pymongo import PyMongo
 from flask_mongoengine import MongoEngine
 import json
 from cache import cache
+from flask_cors import CORS
 
 with open('passwords.json', 'r') as file: 
     passwords = json.load(file)

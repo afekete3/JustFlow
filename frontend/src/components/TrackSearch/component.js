@@ -21,10 +21,9 @@ class TrackSearch extends Component {
 
 		return(
 			<div >
-				<Form className='wide-search' inverted onSubmit={() => { this.props.searchSongs(this.state.searchTerm, this.props.token);}}>
-					<Form.Group>
-						<Form.Input className='wide-search'  onChange={this.updateSearchTerm} placeholder='Search for a song...'/>
-					</Form.Group>
+				<h3>Search for songs to base your playlist off of!</h3>
+				<Form inverted onSubmit={() => { this.props.searchSongs(this.state.searchTerm, this.props.token);}}>
+					<Form.Input onChange={this.updateSearchTerm} placeholder='Search for a song...'/>
 				</Form>
 			</div>
 			

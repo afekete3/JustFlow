@@ -10,10 +10,15 @@ class SongList extends Component {
   constructor(props){
     super(props)
     this.state= {
-      selectedSong: null,
       currentPlaylist: null,
       currentSongs: []
     }
+  }
+
+  componentWillUnmount(){
+    // just want to remove the songs from the list
+    this.props.clearSongs()
+    this.props.setSelectedSongs([])
   }
 
   playSong(song) {
@@ -44,31 +49,6 @@ class SongList extends Component {
 
   }
 
-  selectSong(){
-    console.log(this.state.selectedSong)
-
-    return(
-      <div>
-        <div className='playlist-title-container'>
-          <div className='playlist-image-container'>
-            <img className='playlist-image' src={this.state.selectedSong.track.album.images[0] ? this.state.selectedSong.track.album.images[0].url : null} />
-          </div>
-          
-          <div className='playlist-info-container'>
-            <p className='playlist-text'>SELECTED SONG</p>
-            <h3 className='header-title'>{this.state.selectedSong.track.name}</h3>
-            <p className='created-by'>Artist: <span className='lighter-text'>{this.state.selectedSong.track.artists[0].name}</span> </p>
-            <button onClick={this.generatePlaylist} className='generate-btn generate-btn-container'>GENERATE</button>
-            {/* <p className='created-by'>Artist: <span className='lighter-text'>{this.state.selectedSong.track.artists[0].name}</span> - {this.msToMinutesAndSeconds(this.state.selectedSong.track.duration_ms)}</p> */}
-
-          </div>
-        </div>
-      </div>
-      
-    )
-    
-  }
-
 
   msToMinutesAndSeconds(ms) {
     const minutes = Math.floor(ms / 60000);
@@ -92,7 +72,8 @@ class SongList extends Component {
 
               return (
                 <li onClick={()=>{
-                  this.setState({selectedSong: song})
+                  
+                  this.props.setSelectedSongs([song])
                 }} className={song.track.id === this.props.songId ? `active user-song-item greenText ${currentlyPlayingClass}` : `user-song-item`} key={ song.track.id }>
                   <div onClick={() => {this.playSong(song) } } className='play-song'>
                     <Icon circular name='play' inverted color='grey'  link/>
@@ -133,12 +114,6 @@ class SongList extends Component {
 
     return (
       <div>
-        {this.state.selectedSong!==null && this.props.headerTitle==='GeneratePlaylist' && (
-          <div>
-            {this.selectSong()}
-          </div>
-        )}
-        <div>
             <div className='song-header-container'>
               <div className='song-title-header'>
                 <p>Title</p>
@@ -162,9 +137,6 @@ class SongList extends Component {
               {
                 this.props.songs && !this.props.fetchPlaylistSongsPending && this.renderSongs()
               }
-        </div>
-        
-        
 
       </div>
     );
@@ -192,7 +164,9 @@ SongList.propTypes = {
   playSpecificTrack: PropTypes.func,
   playlists: PropTypes.array,
   currentPlayerState: PropTypes.object,
-  isOrganizing: PropTypes.bool
+  isOrganizing: PropTypes.bool,
+  setSelectedSongs : PropTypes.func, 
+  clearSongs : PropTypes.func, 
 };
 
 export default SongList;

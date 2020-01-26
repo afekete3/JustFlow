@@ -192,12 +192,12 @@ class App extends Component {
 
 	    <div className='App'>
 	      <div className='app-container'>
-
-	        <div className='left-side-section'>
-	          <SideMenu />
-	          <UserPlaylists />
-	          <ArtWork />
-	        </div>
+			  
+			<div className='left-side-section'>
+				<SideMenu />
+				<UserPlaylists />
+				<ArtWork />
+			</div>
 
 	        <div className='main-section'>
 	          <Header />

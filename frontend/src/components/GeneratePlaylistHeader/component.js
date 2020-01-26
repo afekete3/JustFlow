@@ -10,10 +10,30 @@ class GeneratePlaylistHeader extends Component{
     super(props);
     this.generatePlaylistClick = this.generatePlaylistClick.bind(this); 
     this.addSongsToPlaylist = this.addSongsToPlaylist.bind(this); 
+    this.state = {
+      name : "", 
+      size : 0, 
+      nameError : false, 
+      sizeError : false,  
+    }
   }
 
   generatePlaylistClick(){
-    this.generatePlaylist();
+    if(this.state.name === ""){
+      this.setState({nameError : true}); 
+    }
+    else if(this.state.nameError){
+      this.setState({nameError : false}); 
+    }
+    if(this.state.size <= 0){
+      this.setState({sizeError : true}); 
+    }
+    else if(this.state.sizeError){
+      this.setState({sizeError : false}); 
+    }
+    if(!this.state.sizeError && !this.state.nameError){
+      this.generatePlaylist();
+    }
   }
 
   
@@ -141,7 +161,8 @@ class GeneratePlaylistHeader extends Component{
             <Form.Field 
               control={Input}
               label = 'Playlist Name'
-              placeholder='Playlist Name' 
+              placeholder='Playlist Name'
+              error={this.state.nameError} 
               onChange={e=> this.setState({'name' : e.target.value})}
             />
             <Form.Field 
@@ -149,6 +170,7 @@ class GeneratePlaylistHeader extends Component{
               label = 'Playlist Size'
               type='number' 
               placeholder='Playlist Size'
+              error={this.state.sizeError}
               onChange={e=> this.setState({'size' : e.target.value})} 
             /> 
           </Form.Group>
@@ -158,7 +180,7 @@ class GeneratePlaylistHeader extends Component{
               {this.selectSong()}
             </div>
           )}
-          <button onClick={this.generatePlaylistClick} className='new-playlist-btn'>Generate</button>
+          <button onClick={this.generatePlaylistClick} className='organize-btn'>GENERATE</button>
         </Form>
       </div>
     );

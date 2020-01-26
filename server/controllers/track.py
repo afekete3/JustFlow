@@ -74,6 +74,10 @@ def get_all():
     all_tracks = Track.objects
     return all_tracks
 
+def get_tempo_range(low, high):
+    tracks_in_range = Track.objects(tempo__gt=low, tempo__lt=high)
+    return tracks_in_range
+
 def get_multiple_tracks(track_ids, access_token):
     tracks = []
     for id in track_ids:

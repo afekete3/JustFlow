@@ -4,7 +4,7 @@ import sys
 sys.path.append(".")
 from cache import cache
 
-@cache.memoize(timeout=300)
+@cache.memoize(timeout=3600)
 def generate(seed_song, all_tracks, num_of_songs):
     playlist = []
     euclidean = {}

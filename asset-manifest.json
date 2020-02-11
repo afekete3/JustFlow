@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/JustFlow/static/css/main.78d549dc.chunk.css",
+    "main.js": "/JustFlow/static/js/main.96069e87.chunk.js",
+    "main.js.map": "/JustFlow/static/js/main.96069e87.chunk.js.map",
+    "runtime-main.js": "/JustFlow/static/js/runtime-main.20108957.js",
+    "runtime-main.js.map": "/JustFlow/static/js/runtime-main.20108957.js.map",
+    "static/js/2.b684f297.chunk.js": "/JustFlow/static/js/2.b684f297.chunk.js",
+    "static/js/2.b684f297.chunk.js.map": "/JustFlow/static/js/2.b684f297.chunk.js.map",
+    "index.html": "/JustFlow/index.html",
+    "precache-manifest.72797d0074545d498ba5b242f24b57d5.js": "/JustFlow/precache-manifest.72797d0074545d498ba5b242f24b57d5.js",
+    "service-worker.js": "/JustFlow/service-worker.js",
+    "static/css/main.78d549dc.chunk.css.map": "/JustFlow/static/css/main.78d549dc.chunk.css.map",
+    "static/js/2.b684f297.chunk.js.LICENSE": "/JustFlow/static/js/2.b684f297.chunk.js.LICENSE"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.20108957.js",
+    "static/js/2.b684f297.chunk.js",
+    "static/css/main.78d549dc.chunk.css",
+    "static/js/main.96069e87.chunk.js"
+  ]
+}

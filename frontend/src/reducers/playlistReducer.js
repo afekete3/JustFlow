@@ -1,9 +1,12 @@
+import { CommentActions } from "semantic-ui-react";
+
 const defaultState = {
   playlists: [],
   fetchPlaylistError: false,
   fetchPlaylistPending: false,
   reorderPlaylistTrackPending: false, 
   reorderPlaylistTrackError : false, 
+  isGenerating: false
 };
 
 export const playlistReducer = (state = {}, action) => {
@@ -56,6 +59,17 @@ export const playlistReducer = (state = {}, action) => {
       reorderPlaylistTrackPending: false,
       reorderPlaylistTrackError: true
     }
+
+  case "UPDATE_GENERATE_STATE_TRUE":
+    return{
+      ...state,
+      isGenerating: true
+    }
+    case "UPDATE_GENERATE_STATE_FALSE":
+      return{
+        ...state,
+        isGenerating: false
+      }
 
   default:
     return state;

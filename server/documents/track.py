@@ -10,4 +10,7 @@ class Track(Document):
     tempo = FloatField()
     spotify_download = BooleanField()
     meta = {'collection' : 'tracks'}
+    genres = ListField()
+    neighbors = ListField()
+    euclidean_dist = ListField()
 

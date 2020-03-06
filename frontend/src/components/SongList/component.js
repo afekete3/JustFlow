@@ -65,6 +65,7 @@ class SongList extends Component {
             <Dimmer active={this.props.isOrganizing!==undefined ? this.props.isOrganizing : false}>
               <Loader content='Organizing...' />
             </Dimmer>
+            
          <FlipMove duration={600}>{
                 
             this.state.currentSongs.map((song, i) => {
@@ -113,7 +114,11 @@ class SongList extends Component {
 
 
     return (
-      <div>
+      <Segment>
+        <Dimmer active={this.props.isGenerating!==false ? this.props.isGenerating : false}>
+              
+        </Dimmer>
+        <div>
             <div className='song-header-container'>
               <div className='song-title-header'>
                 <p>Title</p>
@@ -138,7 +143,9 @@ class SongList extends Component {
                 this.props.songs && !this.props.fetchPlaylistSongsPending && this.renderSongs()
               }
 
-      </div>
+        </div>
+      </Segment>
+      
     );
   }
 }
@@ -167,6 +174,8 @@ SongList.propTypes = {
   isOrganizing: PropTypes.bool,
   setSelectedSongs : PropTypes.func, 
   clearSongs : PropTypes.func, 
+  isGenerating: PropTypes.bool,
+  updateGenerateState: PropTypes.func
 };
 
 export default SongList;

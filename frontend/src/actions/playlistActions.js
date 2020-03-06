@@ -134,4 +134,17 @@ export const reorderPlaylistTrack = (playlist_id, accessToken, startIndex, endIn
       
     });
   }
+
+}
+
+export const updateGenerateState = (isGenerating)=>{
+  if(isGenerating){
+    return {
+      type: 'UPDATE_GENERATE_STATE_TRUE'
+    }
+  }
+  return {
+    type: 'UPDATE_GENERATE_STATE_FALSE'
+  }
+  
 }

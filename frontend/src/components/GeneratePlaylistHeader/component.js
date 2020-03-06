@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './GeneratePlaylistHeader.css';
-import {Form, TextArea, Input} from 'semantic-ui-react';
-
+import {Form, TextArea, Input, Segment, Dimmer, Loader} from 'semantic-ui-react';
 
 class GeneratePlaylistHeader extends Component{
 
@@ -39,7 +38,7 @@ class GeneratePlaylistHeader extends Component{
   
   generatePlaylist(){
     var seedSongIds = [];
-    
+    this.props.updateGenerateState(true);
     for(let seed of this.props.selectedSongs){
       seedSongIds.push(seed.track.id);      
     }
@@ -127,6 +126,7 @@ class GeneratePlaylistHeader extends Component{
       this.props.addPlaylistItem(data)
       this.props.fetchPlaylistSongs(this.props.userId, playlistId, this.props.token);
       this.props.updateHeaderTitle(this.state.name); 
+      this.props.updateGenerateState(false);
     });
   }
 
@@ -154,35 +154,41 @@ class GeneratePlaylistHeader extends Component{
   render(){
 
     return (
-      <div>
-        <h3>Generate Playlist</h3>
-        <Form inverted>
-          <Form.Group widths='equal'>
-            <Form.Field 
-              control={Input}
-              label = 'Playlist Name'
-              placeholder='Playlist Name'
-              error={this.state.nameError} 
-              onChange={e=> this.setState({'name' : e.target.value})}
-            />
-            <Form.Field 
-              control={Input}
-              label = 'Playlist Size'
-              type='number' 
-              placeholder='Playlist Size'
-              error={this.state.sizeError}
-              onChange={e=> this.setState({'size' : e.target.value})} 
-            /> 
-          </Form.Group>
-          {this.props.selectedSongs.length > 0 && (
-            <div>
-              <label>Seed Songs</label>
-              {this.selectSong()}
-            </div>
-          )}
-          <button onClick={this.generatePlaylistClick} className='organize-btn'>GENERATE</button>
-        </Form>
-      </div>
+      <Segment>
+        {/* <Dimmer active={this.props.isGenerating!==false ? this.props.isGenerating : false}>
+              <Loader content='Generating...' />
+            </Dimmer> */}
+        <div>
+          <h3>Generate Playlist</h3>
+          <Form inverted>
+            <Form.Group widths='equal'>
+              <Form.Field 
+                control={Input}
+                label = 'Playlist Name'
+                placeholder='Playlist Name'
+                error={this.state.nameError} 
+                onChange={e=> this.setState({'name' : e.target.value})}
+              />
+              <Form.Field 
+                control={Input}
+                label = 'Playlist Size'
+                type='number' 
+                placeholder='Playlist Size'
+                error={this.state.sizeError}
+                onChange={e=> this.setState({'size' : e.target.value})} 
+              /> 
+            </Form.Group>
+            {this.props.selectedSongs.length > 0 && (
+              <div>
+                <label>Seed Songs</label>
+                {this.selectSong()}
+              </div>
+            )}
+            <button onClick={this.generatePlaylistClick} className='organize-btn'>GENERATE</button>
+          </Form>
+        </div>
+      </Segment>
+      
     );
   }
 }
@@ -196,6 +202,8 @@ GeneratePlaylistHeader.propTypes = {
   fetchPlaylistSongs : PropTypes.func, 
   fetchPlaylistsMenu: PropTypes.func, 
   addPlaylistItem : PropTypes.func, 
+  isGenerating: PropTypes.bool,
+  updateGenerateState: PropTypes.func
 };
 
 export default GeneratePlaylistHeader;

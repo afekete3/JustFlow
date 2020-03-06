@@ -1,6 +1,6 @@
 from flask import Flask, request, Blueprint, Response, make_response
 from controllers import track
-from models import generate_model, organize_model
+from models import generate_model, organize_model, model_visualization
 # import timeit
 
 TEMPO_RANGE = 10
@@ -20,4 +20,5 @@ def generate_playlist():
     all_tracks = track.get_tempo_range(tempo -TEMPO_RANGE, tempo + TEMPO_RANGE)
     # call the generate method with the machine learning
     generated_playlist = generate_model.generate(given_track[0], all_tracks, data['num_of_songs'])
+    model_visualization.visualize_playlist(generated_playlist)
     return make_response({'generated_playlist_ids':generated_playlist})

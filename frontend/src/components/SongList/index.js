@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { fetchSongs, setSelectedSongs, clearSongs } from '../../actions/songActions';
 import {playSpecificTrack} from '../../actions/spotifyPlayerActions';
+import { updateGenerateState } from '../../actions/playlistActions';
+
 
 const mapStateToProps = (state) => {
 
@@ -18,7 +20,9 @@ const mapStateToProps = (state) => {
     headerTitle: state.uiReducer.title,
     playlists: state.playlistReducer.playlists,
     currentPlayerState: state.spotifyPlayerReducer.currentPlayerState,
-    isOrganizing: state.playlistOrganizeReducer.isOrganizing
+    isOrganizing: state.playlistOrganizeReducer.isOrganizing,
+    isGenerating: state.playlistReducer.isGenerating
+
   };
 
 };
@@ -29,7 +33,8 @@ const mapDispatchToProps = (dispatch) => {
     fetchSongs,
     setSelectedSongs, 
     clearSongs,
-    playSpecificTrack
+    playSpecificTrack,
+    updateGenerateState
   }, dispatch);
 
 };

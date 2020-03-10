@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './GeneratePlaylistHeader.css';
-import {Form, TextArea, Input, Segment, Dimmer, Loader} from 'semantic-ui-react';
+import {Form, TextArea, Input, Segment, Dimmer, Loader, Dropdown} from 'semantic-ui-react';
 
 class GeneratePlaylistHeader extends Component{
 
@@ -18,19 +18,22 @@ class GeneratePlaylistHeader extends Component{
   }
 
   generatePlaylistClick(){
+    let extra = false; 
     if(this.state.name === ""){
+      extra = true
       this.setState({nameError : true}); 
     }
     else if(this.state.nameError){
       this.setState({nameError : false}); 
     }
-    if(this.state.size <= 0){
+    if(this.state.size <= 0 || this.state.size > 20){
+      extra = true
       this.setState({sizeError : true}); 
     }
     else if(this.state.sizeError){
       this.setState({sizeError : false}); 
     }
-    if(!this.state.sizeError && !this.state.nameError){
+    if(!extra && !this.state.sizeError && !this.state.nameError){
       this.generatePlaylist();
     }
   }
@@ -182,9 +185,11 @@ class GeneratePlaylistHeader extends Component{
               <div>
                 <label>Seed Songs</label>
                 {this.selectSong()}
+                <button onClick={this.generatePlaylistClick} className='organize-btn'>GENERATE</button>
               </div>
+              
             )}
-            <button onClick={this.generatePlaylistClick} className='organize-btn'>GENERATE</button>
+            
           </Form>
         </div>
       </Segment>

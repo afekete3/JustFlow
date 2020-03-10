@@ -2,23 +2,14 @@ import heapq
 from scipy.spatial import distance
 import sys
 sys.path.append(".")
-from cache import cache
 
-@cache.memoize(timeout=3600)
-def generate(seed_song, all_tracks, num_of_songs):
-    playlist = []
-    euclidean = {}
-    for track in all_tracks: 
-        dis = -distance.euclidean(seed_song['chroma'], track['chroma'])
-        euclidean[track['_id']] = dis
-        heapq.heappush(playlist, (dis, track))
-        if len(playlist) > int(num_of_songs): 
-            heapq.heappop(playlist)
-    # making the list of songs not a tuple 
-    new_playlist = []
-    for track in playlist:
-        new_playlist.append(track[1]['_id'])
-    return new_playlist
+def generate(seed_song, num_of_songs):
+    playlist = [seed_song['_id']]
+    print(seed_song['name'])
+    neighbor_ids = list(seed_song['combined_neighbors'].keys())
+    for id in neighbor_ids[:int(num_of_songs) - 1]:
+        playlist.append(id)
+    return playlist
 
 
     

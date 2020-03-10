@@ -9,8 +9,8 @@ class Track(Document):
     chroma = ListField()
     tempo = FloatField()
     spotify_download = BooleanField()
-    meta = {'collection' : 'tracks'}
     genres = ListField()
-    neighbors = ListField()
-    euclidean_dist = ListField()
+    combined_neighbors = ListField()
+    mfcc_neighbors = ListField()
+    meta = {'collection' : 'test_tracks'}
 
